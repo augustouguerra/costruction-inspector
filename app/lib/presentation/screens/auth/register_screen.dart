@@ -24,7 +24,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   TradeType? _trade;
   bool _loading = false;
   String? _error;
-  bool _emailSent = false;
 
   Future<void> _submit() async {
     if (_role == UserRole.tradesperson && _trade == null) {
@@ -33,18 +32,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     }
     setState(() { _loading = true; _error = null; });
     try {
-      final response = await ref.read(authRepositoryProvider).signUp(
+      await ref.read(authTokenProvider.notifier).register(
             email: _emailCtrl.text.trim(),
             password: _passwordCtrl.text,
             fullName: _nameCtrl.text.trim(),
             role: _role,
             trade: _trade,
           );
-      // session == null means email confirmation is required
-      if (mounted && response.session == null) {
-        setState(() => _emailSent = true);
-      }
-      // if session != null the router redirect handles navigation automatically
+      // Router redirect handles navigation automatically after token is set.
     } catch (e) {
       setState(() => _error = e.toString());
     } finally {
@@ -54,36 +49,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_emailSent) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Check Your Email')),
-        body: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.mark_email_read_outlined, size: 72, color: Color(0xFF1B4F72)),
-              const SizedBox(height: 24),
-              Text(
-                'Confirm your email',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                'We sent a confirmation link to ${_emailCtrl.text.trim()}. Open it to activate your account, then come back and sign in.',
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              FilledButton(
-                onPressed: () => context.go('/login'),
-                child: const Text('Go to Sign In'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(title: const Text('Create Account')),
       body: SingleChildScrollView(

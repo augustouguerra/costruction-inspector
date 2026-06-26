@@ -1,17 +1,13 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
-
+import '../../core/services/api_client.dart';
 import '../models/floor_model.dart';
 
 class FloorRepository {
-  final _client = Supabase.instance.client;
+  final ApiClient _api;
+  FloorRepository(this._api);
 
   Future<List<FloorModel>> fetchFloors(String projectId) async {
-    final data = await _client
-        .from('floors')
-        .select()
-        .eq('project_id', projectId)
-        .order('number');
-    return data.map<FloorModel>(FloorModel.fromJson).toList();
+    final res = await _api.dio.get('/projects/$projectId/floors');
+    return (res.data as List).map((e) => FloorModel.fromJson(e as Map<String, dynamic>)).toList();
   }
 
   Future<FloorModel> createFloor({
@@ -19,14 +15,13 @@ class FloorRepository {
     required int number,
     required String label,
   }) async {
-    final data = await _client.from('floors').insert({
-      'project_id': projectId,
+    final res = await _api.dio.post('/projects/$projectId/floors', data: {
       'number': number,
       'label': label,
-    }).select().single();
-    return FloorModel.fromJson(data);
+    });
+    return FloorModel.fromJson(res.data as Map<String, dynamic>);
   }
 
   Future<void> deleteFloor(String floorId) =>
-      _client.from('floors').delete().eq('id', floorId);
+      _api.dio.delete('/floors/$floorId');
 }

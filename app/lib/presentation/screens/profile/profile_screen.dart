@@ -45,9 +45,7 @@ class ProfileScreen extends ConsumerWidget {
                   icon: const Icon(Icons.logout, color: Colors.red),
                   label: const Text('Sign Out', style: TextStyle(color: Colors.red)),
                   onPressed: () async {
-                    // await FcmService.deleteToken(); // enable after Firebase is configured
-                    await ref.read(authRepositoryProvider).signOut();
-                    if (context.mounted) context.go('/login');
+                    await ref.read(authTokenProvider.notifier).logout();
                   },
                 ),
               ),

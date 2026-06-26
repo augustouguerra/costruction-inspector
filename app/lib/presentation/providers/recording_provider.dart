@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/services/audio_service.dart';
 import '../../data/repositories/issue_repository.dart';
@@ -48,7 +47,7 @@ class RecordingNotifier extends StateNotifier<RecordingState> {
   final AudioService _audioService;
   final IssueRepository _issueRepository;
 
-  RecordingNotifier(this._audioService, this._issueRepository, Ref ref)
+  RecordingNotifier(this._audioService, this._issueRepository)
       : super(const RecordingState(status: RecordingStatus.idle));
 
   Future<void> startRecording() async {
@@ -78,21 +77,14 @@ class RecordingNotifier extends StateNotifier<RecordingState> {
 
     try {
       final issue = await _issueRepository.createIssue(roomId: roomId);
-      final storagePath =
-          await _audioService.uploadAudio(localPath, issue.id);
-      await _issueRepository.updateAudioUrl(issue.id, storagePath);
 
       state = state.copyWith(
         status: RecordingStatus.transcribing,
         issueId: issue.id,
       );
 
-      final result = await Supabase.instance.client.functions.invoke(
-        'process-audio',
-        body: {'issue_id': issue.id, 'audio_storage_path': storagePath},
-      );
+      final data = await _issueRepository.processAudio(issue.id, localPath);
 
-      final data = result.data as Map<String, dynamic>;
       state = state.copyWith(
         status: RecordingStatus.done,
         transcription: data['transcription'] as String?,
@@ -124,6 +116,5 @@ final recordingProvider =
   return RecordingNotifier(
     ref.watch(audioServiceProvider),
     ref.watch(issueRepositoryProvider),
-    ref,
   );
 });

@@ -1,30 +1,25 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
-
+import '../../core/services/api_client.dart';
 import '../models/apartment_model.dart';
 
 class ApartmentRepository {
-  final _client = Supabase.instance.client;
+  final ApiClient _api;
+  ApartmentRepository(this._api);
 
   Future<List<ApartmentModel>> fetchApartments(String floorId) async {
-    final data = await _client
-        .from('apartments')
-        .select()
-        .eq('floor_id', floorId)
-        .order('identifier');
-    return data.map<ApartmentModel>(ApartmentModel.fromJson).toList();
+    final res = await _api.dio.get('/floors/$floorId/apartments');
+    return (res.data as List).map((e) => ApartmentModel.fromJson(e as Map<String, dynamic>)).toList();
   }
 
   Future<ApartmentModel> createApartment({
     required String floorId,
     required String identifier,
   }) async {
-    final data = await _client.from('apartments').insert({
-      'floor_id': floorId,
+    final res = await _api.dio.post('/floors/$floorId/apartments', data: {
       'identifier': identifier,
-    }).select().single();
-    return ApartmentModel.fromJson(data);
+    });
+    return ApartmentModel.fromJson(res.data as Map<String, dynamic>);
   }
 
   Future<void> deleteApartment(String apartmentId) =>
-      _client.from('apartments').delete().eq('id', apartmentId);
+      _api.dio.delete('/apartments/$apartmentId');
 }

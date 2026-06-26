@@ -13,7 +13,8 @@ dependencies:
   cupertino_icons: ^1.0.8
 
   # Backend & Auth
-  supabase_flutter: ^2.5.6
+  dio: ^5.7.0
+  flutter_secure_storage: ^9.2.2
 
   # State management
   flutter_riverpod: ^2.5.1

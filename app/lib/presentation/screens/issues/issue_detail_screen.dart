@@ -5,9 +5,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../../../core/constants/app_constants.dart';
 import '../../../data/models/issue_model.dart';
 import '../../../data/repositories/issue_repository.dart' show IssueRepository;
 import '../../../domain/enums/issue_status.dart';
@@ -47,14 +44,7 @@ class _IssueDetailScreenState extends ConsumerState<IssueDetailScreen> {
     final picked = await picker.pickImage(source: ImageSource.camera, imageQuality: 80);
     if (picked == null) return;
 
-    final client = Supabase.instance.client;
-    final userId = client.auth.currentUser!.id;
-    final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-    final storagePath = '$userId/${widget.issueId}/$fileName';
-
-    final file = File(picked.path);
-    await client.storage.from(AppConstants.photosBucket).upload(storagePath, file);
-    await ref.read(issueRepositoryProvider).addPhoto(widget.issueId, storagePath);
+    await ref.read(issueRepositoryProvider).addPhoto(widget.issueId, picked.path);
     await _loadIssue();
   }
 

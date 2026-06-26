@@ -15,7 +15,7 @@ import '../../presentation/screens/notifications/notifications_screen.dart';
 import '../../presentation/screens/profile/profile_screen.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final authState = ref.watch(authSessionProvider);
+  final authState = ref.watch(authTokenProvider);
 
   return GoRouter(
     initialLocation: '/projects',

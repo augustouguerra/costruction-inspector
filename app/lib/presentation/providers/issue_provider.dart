@@ -2,9 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/models/issue_model.dart';
 import '../../data/repositories/issue_repository.dart';
+import 'auth_provider.dart';
 
-final issueRepositoryProvider =
-    Provider<IssueRepository>((_) => IssueRepository());
+final issueRepositoryProvider = Provider<IssueRepository>(
+  (ref) => IssueRepository(ref.watch(apiClientProvider)),
+);
 
 final roomIssuesProvider =
     FutureProvider.family<List<IssueModel>, String>((ref, roomId) {

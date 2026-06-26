@@ -23,11 +23,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _submit() async {
     setState(() { _loading = true; _error = null; });
     try {
-      await ref.read(authRepositoryProvider).signIn(
-            email: _emailCtrl.text.trim(),
-            password: _passwordCtrl.text,
+      await ref.read(authTokenProvider.notifier).login(
+            _emailCtrl.text.trim(),
+            _passwordCtrl.text,
           );
-      // await FcmService.registerToken(); // enable after Firebase is configured
     } catch (e) {
       setState(() => _error = e.toString());
     } finally {
