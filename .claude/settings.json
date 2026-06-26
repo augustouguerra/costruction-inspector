@@ -10,7 +10,15 @@
       "PowerShell(C:\\\\flutter\\\\bin\\\\flutter.bat devices --device-timeout 30)",
       "Bash(Get-ChildItem -Path \"c:\\\\construction-inspector\\\\app\" -Name \"pubspec.yaml\" -ErrorAction SilentlyContinue)",
       "PowerShell(supabase --version 2>&1)",
-      "Read(//d/Users/augus/Downloads/**)"
+      "Read(//d/Users/augus/Downloads/**)",
+      "PowerShell(npm list -g @nestjs/cli 2>$null)",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "PowerShell(npm install -g @nestjs/cli)",
+      "Read(//c/Program Files/PostgreSQL/**)",
+      "PowerShell($env:PGPASSWORD=\"postgres\"; & \"C:\\\\Program Files\\\\PostgreSQL\\\\16\\\\bin\\\\psql.exe\" -U postgres -h localhost -c \"\\\\conninfo\" 2>&1)",
+      "PowerShell(foreach \\($pwd in @\\(\"admin\", \"password\", \"1234\", \"12345\", \"123456\", \"root\", \"\"\\)\\) { $env:PGPASSWORD=$pwd; $result = & \"C:\\\\Program Files\\\\PostgreSQL\\\\16\\\\bin\\\\psql.exe\" -U postgres -h localhost -c \"\\\\conninfo\" 2>&1; if \\($LASTEXITCODE -eq 0\\) { Write-Host \"PASSWORD FOUND: '$pwd'\"; break } })",
+      "PowerShell($env:PGPASSWORD=\"postgres\"; Invoke-RestMethod -Uri \"http://localhost:3000/api/auth/register\" -Method Post -ContentType \"application/json\" -Body '{\"email\":\"test@test.com\",\"password\":\"123456\",\"fullName\":\"Test\",\"role\":\"architect\"}' | ConvertTo-Json)"
     ]
   }
 }

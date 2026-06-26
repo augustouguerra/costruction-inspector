@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  architect
+  tradesperson
+  project_manager
+  admin
+}
+
+enum TradeType {
+  plumber
+  electrician
+  carpenter
+  painter
+  hvac
+  mason
+  tiler
+  glazier
+  general
+  unknown
+}
+
+enum IssueStatus {
+  open
+  acknowledged
+  in_progress
+  resolved
+  rejected
+}
+
+model User {
+  id        String     @id @default(uuid()) @db.Uuid
+  email     String     @unique
+  password  String
+  fullName  String
+  role      UserRole
+  trade     TradeType?
+  avatarUrl String?
+  phone     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  ownedProjects      Project[]
+  projectMemberships ProjectMember[]
+  createdIssues      Issue[]           @relation("CreatedIssues")
+  assignedIssues     Issue[]           @relation("AssignedIssues")
+  issuePhotos        IssuePhoto[]
+  issueComments      IssueComment[]
+  fcmTokens          FcmToken[]
+  notificationLogs   NotificationLog[]
+
+  @@map("users")
+}
+
+model FcmToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  token     String   @unique
+  platform  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("fcm_tokens")
+}
+
+model Project {
+  id            String   @id @default(uuid()) @db.Uuid
+  name          String
+  address       String?
+  description   String?
+  ownerId       String   @db.Uuid
+  coverImageUrl String?
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  owner   User            @relation(fields: [ownerId], references: [id])
+  members ProjectMember[]
+  floors  Floor[]
+
+  @@map("projects")
+}
+
+model ProjectMember {
+  projectId String   @db.Uuid
+  userId    String   @db.Uuid
+  role      UserRole
+  joinedAt  DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, userId])
+  @@map("project_members")
+}
+
+model Floor {
+  id        String   @id @default(uuid()) @db.Uuid
+  projectId String   @db.Uuid
+  number    Int
+  label     String
+  createdAt DateTime @default(now())
+
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  apartments Apartment[]
+
+  @@unique([projectId, number])
+  @@map("floors")
+}
+
+model Apartment {
+  id         String   @id @default(uuid()) @db.Uuid
+  floorId    String   @db.Uuid
+  identifier String
+  createdAt  DateTime @default(now())
+
+  floor Floor  @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  rooms Room[]
+
+  @@unique([floorId, identifier])
+  @@map("apartments")
+}
+
+model Room {
+  id          String   @id @default(uuid()) @db.Uuid
+  apartmentId String   @db.Uuid
+  name        String
+  createdAt   DateTime @default(now())
+
+  apartment Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  issues    Issue[]
+
+  @@map("rooms")
+}
+
+model Issue {
+  id                  String      @id @default(uuid()) @db.Uuid
+  roomId              String      @db.Uuid
+  createdBy           String      @db.Uuid
+  assignedTrade       TradeType   @default(unknown)
+  assignedTo          String?     @db.Uuid
+  status              IssueStatus @default(open)
+  title               String?
+  description         String?
+  audioFileUrl        String?
+  transcriptionRaw    String?
+  detectionConfidence Float?
+  priority            Int         @default(2)
+  resolvedAt          DateTime?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  room     Room  @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  creator  User  @relation("CreatedIssues", fields: [createdBy], references: [id])
+  assignee User? @relation("AssignedIssues", fields: [assignedTo], references: [id])
+
+  photos           IssuePhoto[]
+  comments         IssueComment[]
+  notificationLogs NotificationLog[]
+
+  @@map("issues")
+}
+
+model IssuePhoto {
+  id          String   @id @default(uuid()) @db.Uuid
+  issueId     String   @db.Uuid
+  storagePath String
+  uploadedBy  String   @db.Uuid
+  createdAt   DateTime @default(now())
+
+  issue    Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  uploader User  @relation(fields: [uploadedBy], references: [id])
+
+  @@map("issue_photos")
+}
+
+model IssueComment {
+  id        String   @id @default(uuid()) @db.Uuid
+  issueId   String   @db.Uuid
+  authorId  String   @db.Uuid
+  body      String
+  createdAt DateTime @default(now())
+
+  issue  Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  author User  @relation(fields: [authorId], references: [id])
+
+  @@map("issue_comments")
+}
+
+model NotificationLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  issueId     String?  @db.Uuid
+  recipientId String   @db.Uuid
+  fcmToken    String
+  title       String
+  body        String
+  sentAt      DateTime @default(now())
+  status      String
+
+  issue     Issue? @relation(fields: [issueId], references: [id])
+  recipient User   @relation(fields: [recipientId], references: [id])
+
+  @@map("notification_logs")
+}
