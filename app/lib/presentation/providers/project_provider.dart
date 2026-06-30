@@ -9,5 +9,6 @@ final projectRepositoryProvider = Provider<ProjectRepository>(
 );
 
 final projectsProvider = FutureProvider<List<ProjectModel>>((ref) {
+  ref.watch(authTokenProvider);
   return ref.read(projectRepositoryProvider).fetchProjects();
 });

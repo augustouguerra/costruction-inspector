@@ -18,7 +18,18 @@
       "Read(//c/Program Files/PostgreSQL/**)",
       "PowerShell($env:PGPASSWORD=\"postgres\"; & \"C:\\\\Program Files\\\\PostgreSQL\\\\16\\\\bin\\\\psql.exe\" -U postgres -h localhost -c \"\\\\conninfo\" 2>&1)",
       "PowerShell(foreach \\($pwd in @\\(\"admin\", \"password\", \"1234\", \"12345\", \"123456\", \"root\", \"\"\\)\\) { $env:PGPASSWORD=$pwd; $result = & \"C:\\\\Program Files\\\\PostgreSQL\\\\16\\\\bin\\\\psql.exe\" -U postgres -h localhost -c \"\\\\conninfo\" 2>&1; if \\($LASTEXITCODE -eq 0\\) { Write-Host \"PASSWORD FOUND: '$pwd'\"; break } })",
-      "PowerShell($env:PGPASSWORD=\"postgres\"; Invoke-RestMethod -Uri \"http://localhost:3000/api/auth/register\" -Method Post -ContentType \"application/json\" -Body '{\"email\":\"test@test.com\",\"password\":\"123456\",\"fullName\":\"Test\",\"role\":\"architect\"}' | ConvertTo-Json)"
+      "PowerShell($env:PGPASSWORD=\"postgres\"; Invoke-RestMethod -Uri \"http://localhost:3000/api/auth/register\" -Method Post -ContentType \"application/json\" -Body '{\"email\":\"test@test.com\",\"password\":\"123456\",\"fullName\":\"Test\",\"role\":\"architect\"}' | ConvertTo-Json)",
+      "Bash(adb devices *)",
+      "Bash(flutter devices *)",
+      "Bash(curl -s -i http://localhost:3000/api/auth/register -X POST -H \"Content-Type: application/json\" -d '{\"email\":\"debugtest@example.com\",\"password\":\"Password123\",\"fullName\":\"Debug Test\",\"role\":\"architect\"}')",
+      "Bash(curl -s -i http://localhost:3000/api/projects -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmMzliNDY4NS02M2U4LTRhZmUtYTEzZS04MzUxMzE5NjQ2YmIiLCJlbWFpbCI6ImRlYnVndGVzdEBleGFtcGxlLmNvbSIsImlhdCI6MTc4Mjg1Nzg0MSwiZXhwIjoxNzgzNDYyNjQxfQ.KVLhKHJnL3WVh5-da2_7QR9YjY4z0tInmvuehIz7xos')",
+      "Bash(adb shell *)",
+      "Bash(netstat -ano)",
+      "Bash(curl -s -i -X POST http://localhost:3000/api/auth/register -H \"Content-Type: application/json\" -d '{\"email\":\"flowtest2@test.com\",\"password\":\"Password123\",\"fullName\":\"Flow Test\",\"role\":\"architect\"}')",
+      "Bash(grep -E \"\\\\.env$|build/|\\\\.dart_tool\")",
+      "Bash(awk '{print $1}')",
+      "Bash(grep -E \"\\\\.env$\")",
+      "Bash(git rm *)"
     ]
   }
 }
