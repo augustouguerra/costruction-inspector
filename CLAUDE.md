@@ -2,7 +2,7 @@
 
 ## What This App Does
 
-A mobile-first construction inspection tool. Architects and project managers log defects by recording audio or taking photos in specific rooms of a building. The backend transcribes audio via OpenAI Whisper, detects which trade (plumber, electrician, etc.) should handle the issue, and notifies matching tradespeople via FCM push notifications.
+A mobile-first construction inspection tool. Architects and project managers log defects by recording audio or taking photos in specific rooms of a building. Audio recordings are stored as-is (no transcription) and can be played back later from the issue detail screen. Trade assignment and FCM notifications are out of scope for now — `Issue.assignedTrade` exists in the schema but nothing sets it automatically.
 
 ---
 
@@ -19,7 +19,7 @@ A mobile-first construction inspection tool. Architects and project managers log
 
 ## Backend (`backend/`)
 
-**Stack:** NestJS 11 · Prisma 5 · PostgreSQL · JWT auth · Multer (file uploads) · OpenAI SDK
+**Stack:** NestJS 11 · Prisma 5 · PostgreSQL · JWT auth · Multer (file uploads)
 
 **Start:**
 ```bash
@@ -42,20 +42,18 @@ npm run start:prod    # run compiled
 | floors | `GET/POST /api/projects/:projectId/floors` |
 | apartments | `GET/POST /api/floors/:floorId/apartments` |
 | rooms | `GET/POST /api/apartments/:apartmentId/rooms` |
-| issues | `GET /api/rooms/:roomId/issues`, `POST /api/issues`, `GET/DELETE /api/issues/:id`, `PATCH /api/issues/:id/status`, `POST /api/issues/:id/process-audio`, `POST/GET /api/issues/:id/photos`, `POST /api/issues/:id/comments` |
+| issues | `GET /api/rooms/:roomId/issues`, `POST /api/issues`, `GET/DELETE /api/issues/:id`, `PATCH /api/issues/:id/status`, `POST/GET /api/issues/:id/audio`, `POST/GET /api/issues/:id/photos`, `POST /api/issues/:id/comments` |
 | notifications | `POST /api/notifications/register-token`, `DELETE /api/notifications/unregister-token` |
 
 **Key services:**
-- `AudioService` — calls OpenAI Whisper (`whisper-1`, language `es`), detects trade from keyword scoring, generates a short title. Lives in `backend/src/issues/audio.service.ts`.
 - `PrismaService` — thin wrapper over `@prisma/client`, injected globally via `PrismaModule`.
 
-**File uploads:** stored under `backend/uploads/` and served statically at `/uploads/*`. Multer uses in-memory storage; the service writes to disk.
+**File uploads:** stored under `backend/uploads/` and served statically at `/uploads/*`. Multer uses in-memory storage; the service writes to disk. Audio recordings live under `uploads/audio/`, one file per `IssueAudio` row (an Issue can have multiple recordings).
 
 **Environment variables (backend):**
 ```
 DATABASE_URL=postgresql://...
 JWT_SECRET=...
-OPENAI_API_KEY=...
 FCM_SERVER_KEY=...
 PORT=3000        # optional, defaults to 3000
 ```
@@ -81,8 +79,9 @@ Hierarchy: **Project → Floor → Apartment → Room → Issue**
 | `Floor` | belongs to Project; has `number` + `label` |
 | `Apartment` | belongs to Floor; identified by `identifier` string |
 | `Room` | belongs to Apartment; named (predefined list in Flutter) |
-| `Issue` | belongs to Room; has `assignedTrade`, `status`, `audioFileUrl`, `transcriptionRaw`, `detectionConfidence` |
+| `Issue` | belongs to Room; has `assignedTrade` (unset unless manually assigned), `status`, `title`, `description` |
 | `IssuePhoto` | many per Issue |
+| `IssueAudio` | many per Issue; one row per recording, `storagePath` under `uploads/audio/` |
 | `IssueComment` | many per Issue |
 | `FcmToken` | per User per device/platform |
 | `NotificationLog` | records each FCM push sent |
@@ -115,8 +114,8 @@ API_URL=http://10.0.2.2:3000/api   # Android emulator → host
 **Screens:**
 - Auth: login, register
 - Projects list → project detail → floor/apartment/room drill-down
-- Room detail → issue list → issue detail (photos, comments, status)
-- Recording sheet — records audio, uploads via `POST /issues/:id/process-audio`
+- Room detail → issue list → issue detail (photos, comments, status, playable recordings)
+- Recording sheet — records audio, uploads via `POST /issues/:id/audio`, no transcription/processing step
 - Notifications screen
 - Profile screen
 
@@ -134,13 +133,14 @@ The `supabase/functions/` folder contains two Deno Edge Functions (`process-audi
 
 ---
 
-## Audio / Trade Detection Flow
+## Audio Recording Flow
 
-1. Flutter records audio → uploads as multipart to `POST /api/issues/:id/process-audio`
-2. Backend saves file to disk, calls `AudioService.transcribe()` → OpenAI Whisper (Spanish)
-3. `AudioService.detectTrade()` scores Spanish keywords per trade → picks best match
-4. Issue updated with `transcriptionRaw`, `title`, `assignedTrade`, `detectionConfidence`
-5. `NotificationsService` queries `FcmToken` for users with matching `trade`, sends FCM via legacy HTTP API, logs to `NotificationLog`
+1. Flutter records audio (`record` package, AAC-LC `.m4a`) → creates an `Issue` → uploads the file as multipart to `POST /api/issues/:id/audio`
+2. Backend writes the file to `uploads/audio/{issueId}_{timestamp}.m4a` and creates an `IssueAudio` row — no transcription, trade detection, or notification happens here
+3. Issue detail screen fetches recordings via `GET /api/issues/:id/audio` and plays them back inline (`just_audio`, `AudioPlayerTile` widget)
+4. An issue can have multiple recordings; each upload adds a new `IssueAudio` row rather than overwriting a prior one
+
+`NotificationsService.notifyTrade()` and the FCM push flow still exist but nothing currently calls them — trade assignment/notification is unwired pending a manual-assignment feature.
 
 ---
 
@@ -149,5 +149,5 @@ The `supabase/functions/` folder contains two Deno Edge Functions (`process-audi
 - **Android emulator to host:** use `10.0.2.2` not `localhost` in `API_URL`.
 - **Prisma client must be regenerated** after any schema change: `npx prisma generate`.
 - **JWT secret must match** between backend `.env` and any token issued — rotating it invalidates all sessions.
-- **FCM legacy HTTP API** (`fcm.googleapis.com/fcm/send`) is used — Google deprecated it in June 2024 in favor of FCM v1 HTTP API. May need migration.
+- **FCM legacy HTTP API** (`fcm.googleapis.com/fcm/send`) is used by `NotificationsService.notifyTrade()` — Google deprecated it in June 2024 in favor of FCM v1 HTTP API. May need migration. Currently unused by the audio flow (see above).
 - **`supabase/` folder** — leave in place (git history) but do not deploy or invoke its functions.

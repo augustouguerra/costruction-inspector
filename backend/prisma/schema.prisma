@@ -52,6 +52,7 @@ model User {
   createdIssues      Issue[]           @relation("CreatedIssues")
   assignedIssues     Issue[]           @relation("AssignedIssues")
   issuePhotos        IssuePhoto[]
+  issueAudios        IssueAudio[]
   issueComments      IssueComment[]
   fcmTokens          FcmToken[]
   notificationLogs   NotificationLog[]
@@ -143,27 +144,25 @@ model Room {
 }
 
 model Issue {
-  id                  String      @id @default(uuid()) @db.Uuid
-  roomId              String      @db.Uuid
-  createdBy           String      @db.Uuid
-  assignedTrade       TradeType   @default(unknown)
-  assignedTo          String?     @db.Uuid
-  status              IssueStatus @default(open)
-  title               String?
-  description         String?
-  audioFileUrl        String?
-  transcriptionRaw    String?
-  detectionConfidence Float?
-  priority            Int         @default(2)
-  resolvedAt          DateTime?
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
+  id            String      @id @default(uuid()) @db.Uuid
+  roomId        String      @db.Uuid
+  createdBy     String      @db.Uuid
+  assignedTrade TradeType   @default(unknown)
+  assignedTo    String?     @db.Uuid
+  status        IssueStatus @default(open)
+  title         String?
+  description   String?
+  priority      Int         @default(2)
+  resolvedAt    DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   room     Room  @relation(fields: [roomId], references: [id], onDelete: Cascade)
   creator  User  @relation("CreatedIssues", fields: [createdBy], references: [id])
   assignee User? @relation("AssignedIssues", fields: [assignedTo], references: [id])
 
   photos           IssuePhoto[]
+  audios           IssueAudio[]
   comments         IssueComment[]
   notificationLogs NotificationLog[]
 
@@ -181,6 +180,19 @@ model IssuePhoto {
   uploader User  @relation(fields: [uploadedBy], references: [id])
 
   @@map("issue_photos")
+}
+
+model IssueAudio {
+  id          String   @id @default(uuid()) @db.Uuid
+  issueId     String   @db.Uuid
+  storagePath String
+  uploadedBy  String   @db.Uuid
+  createdAt   DateTime @default(now())
+
+  issue    Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  uploader User  @relation(fields: [uploadedBy], references: [id])
+
+  @@map("issue_audios")
 }
 
 model IssueComment {

@@ -89,6 +89,19 @@ class IssueCard extends StatelessWidget {
                   ),
                 ],
               ),
+              if (issue.creator != null) ...[
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    const Icon(Icons.person_outline, size: 12, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Text(
+                      issue.creator!.fullName,
+                      style: const TextStyle(fontSize: 11, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ],
             ],
           ),
         ),
@@ -97,6 +110,9 @@ class IssueCard extends StatelessWidget {
   }
 
   String _formatDate(DateTime dt) {
-    return '${dt.day}/${dt.month}/${dt.year}';
+    final local = dt.toLocal();
+    final hh = local.hour.toString().padLeft(2, '0');
+    final mm = local.minute.toString().padLeft(2, '0');
+    return '${local.day}/${local.month}/${local.year} $hh:$mm';
   }
 }

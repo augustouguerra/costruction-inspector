@@ -3,41 +3,40 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateIssueDto } from './dto/create-issue.dto';
 import { UpdateStatusDto } from './dto/update-status.dto';
 import { AddCommentDto } from './dto/add-comment.dto';
-import { AudioService } from './audio.service';
-import { NotificationsService } from '../notifications/notifications.service';
 import * as path from 'path';
 import * as fs from 'fs';
-import { TradeType } from '@prisma/client';
 
 @Injectable()
 export class IssuesService {
-  constructor(
-    private prisma: PrismaService,
-    private audioService: AudioService,
-    private notificationsService: NotificationsService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async findByRoom(roomId: string) {
     const issues = await this.prisma.issue.findMany({
       where: { roomId },
       orderBy: { createdAt: 'desc' },
-      include: { photos: true },
+      include: {
+        photos: true,
+        audios: true,
+        creator: { select: { id: true, fullName: true, email: true } },
+      },
     });
     return issues.map((i) => ({
       ...i,
       photoUrls: i.photos.map((p) => `/uploads/${p.storagePath}`),
+      audioUrls: i.audios.map((a) => `/uploads/${a.storagePath}`),
     }));
   }
 
   async findOne(issueId: string) {
     const issue = await this.prisma.issue.findUnique({
       where: { id: issueId },
-      include: { photos: true, comments: { include: { author: true } } },
+      include: { photos: true, audios: true, comments: { include: { author: true } } },
     });
     if (!issue) throw new NotFoundException('Issue not found');
     return {
       ...issue,
       photoUrls: issue.photos.map((p) => `/uploads/${p.storagePath}`),
+      audioUrls: issue.audios.map((a) => `/uploads/${a.storagePath}`),
     };
   }
 
@@ -66,35 +65,27 @@ export class IssuesService {
     return this.prisma.issue.delete({ where: { id: issueId } });
   }
 
-  async processAudio(issueId: string, userId: string, file: Express.Multer.File) {
+  async addAudio(issueId: string, userId: string, file: Express.Multer.File) {
     const uploadsDir = path.join(process.cwd(), process.env.UPLOADS_DIR ?? 'uploads', 'audio');
     fs.mkdirSync(uploadsDir, { recursive: true });
 
-    const fileName = `${userId}/${issueId}/recording.m4a`;
-    const filePath = path.join(uploadsDir, `${userId}_${issueId}_recording.m4a`);
+    const storagePath = `audio/${issueId}_${Date.now()}.m4a`;
+    const filePath = path.join(process.cwd(), process.env.UPLOADS_DIR ?? 'uploads', storagePath);
     fs.writeFileSync(filePath, file.buffer);
 
-    const transcription = await this.audioService.transcribe(filePath);
-    const { trade, confidence } = this.audioService.detectTrade(transcription);
-    const title = this.audioService.generateTitle(transcription);
-
-    const audioUrl = `/uploads/audio/${userId}_${issueId}_recording.m4a`;
-
-    const updated = await this.prisma.issue.update({
-      where: { id: issueId },
-      data: {
-        transcriptionRaw: transcription,
-        description: transcription,
-        title,
-        assignedTrade: trade as TradeType,
-        detectionConfidence: confidence,
-        audioFileUrl: audioUrl,
-      },
+    const audio = await this.prisma.issueAudio.create({
+      data: { issueId, storagePath, uploadedBy: userId },
     });
 
-    await this.notificationsService.notifyTrade(issueId, trade, title);
+    return { ...audio, url: `/uploads/${audio.storagePath}` };
+  }
 
-    return { transcription, trade, confidence };
+  async getAudios(issueId: string) {
+    const audios = await this.prisma.issueAudio.findMany({
+      where: { issueId },
+      orderBy: { createdAt: 'desc' },
+    });
+    return audios.map((a) => ({ ...a, url: `/uploads/${a.storagePath}` }));
   }
 
   async addPhoto(issueId: string, userId: string, file: Express.Multer.File) {

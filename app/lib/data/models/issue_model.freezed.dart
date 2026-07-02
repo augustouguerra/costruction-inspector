@@ -34,6 +34,7 @@ mixin _$IssueModel {
   DateTime get updatedAt => throw _privateConstructorUsedError;
   List<String> get photoUrls => throw _privateConstructorUsedError;
   List<String> get audioUrls => throw _privateConstructorUsedError;
+  IssueCreatorModel? get creator => throw _privateConstructorUsedError;
 
   /// Serializes this IssueModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -65,7 +66,10 @@ abstract class $IssueModelCopyWith<$Res> {
       DateTime createdAt,
       DateTime updatedAt,
       List<String> photoUrls,
-      List<String> audioUrls});
+      List<String> audioUrls,
+      IssueCreatorModel? creator});
+
+  $IssueCreatorModelCopyWith<$Res>? get creator;
 }
 
 /// @nodoc
@@ -97,6 +101,7 @@ class _$IssueModelCopyWithImpl<$Res, $Val extends IssueModel>
     Object? updatedAt = null,
     Object? photoUrls = null,
     Object? audioUrls = null,
+    Object? creator = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -155,7 +160,25 @@ class _$IssueModelCopyWithImpl<$Res, $Val extends IssueModel>
           ? _value.audioUrls
           : audioUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      creator: freezed == creator
+          ? _value.creator
+          : creator // ignore: cast_nullable_to_non_nullable
+              as IssueCreatorModel?,
     ) as $Val);
+  }
+
+  /// Create a copy of IssueModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @pragma('vm:prefer-inline')
+  $IssueCreatorModelCopyWith<$Res>? get creator {
+    if (_value.creator == null) {
+      return null;
+    }
+
+    return $IssueCreatorModelCopyWith<$Res>(_value.creator!, (value) {
+      return _then(_value.copyWith(creator: value) as $Val);
+    });
   }
 }
 
@@ -181,7 +204,11 @@ abstract class _$$IssueModelImplCopyWith<$Res>
       DateTime createdAt,
       DateTime updatedAt,
       List<String> photoUrls,
-      List<String> audioUrls});
+      List<String> audioUrls,
+      IssueCreatorModel? creator});
+
+  @override
+  $IssueCreatorModelCopyWith<$Res>? get creator;
 }
 
 /// @nodoc
@@ -211,6 +238,7 @@ class __$$IssueModelImplCopyWithImpl<$Res>
     Object? updatedAt = null,
     Object? photoUrls = null,
     Object? audioUrls = null,
+    Object? creator = freezed,
   }) {
     return _then(_$IssueModelImpl(
       id: null == id
@@ -269,6 +297,10 @@ class __$$IssueModelImplCopyWithImpl<$Res>
           ? _value._audioUrls
           : audioUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      creator: freezed == creator
+          ? _value.creator
+          : creator // ignore: cast_nullable_to_non_nullable
+              as IssueCreatorModel?,
     ));
   }
 }
@@ -290,7 +322,8 @@ class _$IssueModelImpl implements _IssueModel {
       required this.createdAt,
       required this.updatedAt,
       final List<String> photoUrls = const [],
-      final List<String> audioUrls = const []})
+      final List<String> audioUrls = const [],
+      this.creator})
       : _photoUrls = photoUrls,
         _audioUrls = audioUrls;
 
@@ -343,8 +376,11 @@ class _$IssueModelImpl implements _IssueModel {
   }
 
   @override
+  final IssueCreatorModel? creator;
+
+  @override
   String toString() {
-    return 'IssueModel(id: $id, roomId: $roomId, createdBy: $createdBy, assignedTrade: $assignedTrade, assignedTo: $assignedTo, status: $status, title: $title, description: $description, priority: $priority, resolvedAt: $resolvedAt, createdAt: $createdAt, updatedAt: $updatedAt, photoUrls: $photoUrls, audioUrls: $audioUrls)';
+    return 'IssueModel(id: $id, roomId: $roomId, createdBy: $createdBy, assignedTrade: $assignedTrade, assignedTo: $assignedTo, status: $status, title: $title, description: $description, priority: $priority, resolvedAt: $resolvedAt, createdAt: $createdAt, updatedAt: $updatedAt, photoUrls: $photoUrls, audioUrls: $audioUrls, creator: $creator)';
   }
 
   @override
@@ -375,7 +411,8 @@ class _$IssueModelImpl implements _IssueModel {
             const DeepCollectionEquality()
                 .equals(other._photoUrls, _photoUrls) &&
             const DeepCollectionEquality()
-                .equals(other._audioUrls, _audioUrls));
+                .equals(other._audioUrls, _audioUrls) &&
+            (identical(other.creator, creator) || other.creator == creator));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -395,7 +432,8 @@ class _$IssueModelImpl implements _IssueModel {
       createdAt,
       updatedAt,
       const DeepCollectionEquality().hash(_photoUrls),
-      const DeepCollectionEquality().hash(_audioUrls));
+      const DeepCollectionEquality().hash(_audioUrls),
+      creator);
 
   /// Create a copy of IssueModel
   /// with the given fields replaced by the non-null parameter values.
@@ -428,7 +466,8 @@ abstract class _IssueModel implements IssueModel {
       required final DateTime createdAt,
       required final DateTime updatedAt,
       final List<String> photoUrls,
-      final List<String> audioUrls}) = _$IssueModelImpl;
+      final List<String> audioUrls,
+      final IssueCreatorModel? creator}) = _$IssueModelImpl;
 
   factory _IssueModel.fromJson(Map<String, dynamic> json) =
       _$IssueModelImpl.fromJson;
@@ -461,11 +500,200 @@ abstract class _IssueModel implements IssueModel {
   List<String> get photoUrls;
   @override
   List<String> get audioUrls;
+  @override
+  IssueCreatorModel? get creator;
 
   /// Create a copy of IssueModel
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$IssueModelImplCopyWith<_$IssueModelImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+IssueCreatorModel _$IssueCreatorModelFromJson(Map<String, dynamic> json) {
+  return _IssueCreatorModel.fromJson(json);
+}
+
+/// @nodoc
+mixin _$IssueCreatorModel {
+  String get id => throw _privateConstructorUsedError;
+  String get fullName => throw _privateConstructorUsedError;
+  String get email => throw _privateConstructorUsedError;
+
+  /// Serializes this IssueCreatorModel to a JSON map.
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+
+  /// Create a copy of IssueCreatorModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  $IssueCreatorModelCopyWith<IssueCreatorModel> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $IssueCreatorModelCopyWith<$Res> {
+  factory $IssueCreatorModelCopyWith(
+          IssueCreatorModel value, $Res Function(IssueCreatorModel) then) =
+      _$IssueCreatorModelCopyWithImpl<$Res, IssueCreatorModel>;
+  @useResult
+  $Res call({String id, String fullName, String email});
+}
+
+/// @nodoc
+class _$IssueCreatorModelCopyWithImpl<$Res, $Val extends IssueCreatorModel>
+    implements $IssueCreatorModelCopyWith<$Res> {
+  _$IssueCreatorModelCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  /// Create a copy of IssueCreatorModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? fullName = null,
+    Object? email = null,
+  }) {
+    return _then(_value.copyWith(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      fullName: null == fullName
+          ? _value.fullName
+          : fullName // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$IssueCreatorModelImplCopyWith<$Res>
+    implements $IssueCreatorModelCopyWith<$Res> {
+  factory _$$IssueCreatorModelImplCopyWith(_$IssueCreatorModelImpl value,
+          $Res Function(_$IssueCreatorModelImpl) then) =
+      __$$IssueCreatorModelImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({String id, String fullName, String email});
+}
+
+/// @nodoc
+class __$$IssueCreatorModelImplCopyWithImpl<$Res>
+    extends _$IssueCreatorModelCopyWithImpl<$Res, _$IssueCreatorModelImpl>
+    implements _$$IssueCreatorModelImplCopyWith<$Res> {
+  __$$IssueCreatorModelImplCopyWithImpl(_$IssueCreatorModelImpl _value,
+      $Res Function(_$IssueCreatorModelImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of IssueCreatorModel
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? id = null,
+    Object? fullName = null,
+    Object? email = null,
+  }) {
+    return _then(_$IssueCreatorModelImpl(
+      id: null == id
+          ? _value.id
+          : id // ignore: cast_nullable_to_non_nullable
+              as String,
+      fullName: null == fullName
+          ? _value.fullName
+          : fullName // ignore: cast_nullable_to_non_nullable
+              as String,
+      email: null == email
+          ? _value.email
+          : email // ignore: cast_nullable_to_non_nullable
+              as String,
+    ));
+  }
+}
+
+/// @nodoc
+@JsonSerializable()
+class _$IssueCreatorModelImpl implements _IssueCreatorModel {
+  const _$IssueCreatorModelImpl(
+      {required this.id, required this.fullName, required this.email});
+
+  factory _$IssueCreatorModelImpl.fromJson(Map<String, dynamic> json) =>
+      _$$IssueCreatorModelImplFromJson(json);
+
+  @override
+  final String id;
+  @override
+  final String fullName;
+  @override
+  final String email;
+
+  @override
+  String toString() {
+    return 'IssueCreatorModel(id: $id, fullName: $fullName, email: $email)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$IssueCreatorModelImpl &&
+            (identical(other.id, id) || other.id == id) &&
+            (identical(other.fullName, fullName) ||
+                other.fullName == fullName) &&
+            (identical(other.email, email) || other.email == email));
+  }
+
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  int get hashCode => Object.hash(runtimeType, id, fullName, email);
+
+  /// Create a copy of IssueCreatorModel
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$IssueCreatorModelImplCopyWith<_$IssueCreatorModelImpl> get copyWith =>
+      __$$IssueCreatorModelImplCopyWithImpl<_$IssueCreatorModelImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$IssueCreatorModelImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _IssueCreatorModel implements IssueCreatorModel {
+  const factory _IssueCreatorModel(
+      {required final String id,
+      required final String fullName,
+      required final String email}) = _$IssueCreatorModelImpl;
+
+  factory _IssueCreatorModel.fromJson(Map<String, dynamic> json) =
+      _$IssueCreatorModelImpl.fromJson;
+
+  @override
+  String get id;
+  @override
+  String get fullName;
+  @override
+  String get email;
+
+  /// Create a copy of IssueCreatorModel
+  /// with the given fields replaced by the non-null parameter values.
+  @override
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$IssueCreatorModelImplCopyWith<_$IssueCreatorModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

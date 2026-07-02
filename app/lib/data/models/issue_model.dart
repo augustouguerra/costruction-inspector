@@ -23,8 +23,21 @@ class IssueModel with _$IssueModel {
     required DateTime updatedAt,
     @Default([]) List<String> photoUrls,
     @Default([]) List<String> audioUrls,
+    IssueCreatorModel? creator,
   }) = _IssueModel;
 
   factory IssueModel.fromJson(Map<String, dynamic> json) =>
       _$IssueModelFromJson(json);
+}
+
+@freezed
+class IssueCreatorModel with _$IssueCreatorModel {
+  const factory IssueCreatorModel({
+    required String id,
+    required String fullName,
+    required String email,
+  }) = _IssueCreatorModel;
+
+  factory IssueCreatorModel.fromJson(Map<String, dynamic> json) =>
+      _$IssueCreatorModelFromJson(json);
 }

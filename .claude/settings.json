@@ -30,7 +30,15 @@
       "Bash(awk '{print $1}')",
       "Bash(grep -E \"\\\\.env$\")",
       "Bash(git rm *)",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(npm uninstall *)",
+      "Bash(npx prisma *)",
+      "Bash(dart run *)",
+      "Bash(flutter analyze *)",
+      "Bash(npm run *)",
+      "Bash(touch uploads/.gitkeep uploads/audio/.gitkeep uploads/photos/.gitkeep)",
+      "Bash(git status *)",
+      "Bash(git check-ignore *)"
     ]
   }
 }

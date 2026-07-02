@@ -40,14 +40,19 @@ export class IssuesController {
     return this.issuesService.remove(id);
   }
 
-  @Post('issues/:id/process-audio')
+  @Post('issues/:id/audio')
   @UseInterceptors(FileInterceptor('audio', { storage: memoryStorage() }))
-  processAudio(
+  addAudio(
     @Request() req,
     @Param('id') id: string,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.issuesService.processAudio(id, req.user.id, file);
+    return this.issuesService.addAudio(id, req.user.id, file);
+  }
+
+  @Get('issues/:id/audio')
+  getAudios(@Param('id') id: string) {
+    return this.issuesService.getAudios(id);
   }
 
   @Post('issues/:id/photos')
