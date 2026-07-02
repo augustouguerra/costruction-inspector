@@ -28,14 +28,12 @@ mixin _$IssueModel {
   IssueStatus get status => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
-  String? get audioFileUrl => throw _privateConstructorUsedError;
-  String? get transcriptionRaw => throw _privateConstructorUsedError;
-  double? get detectionConfidence => throw _privateConstructorUsedError;
   int get priority => throw _privateConstructorUsedError;
   DateTime? get resolvedAt => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   DateTime get updatedAt => throw _privateConstructorUsedError;
   List<String> get photoUrls => throw _privateConstructorUsedError;
+  List<String> get audioUrls => throw _privateConstructorUsedError;
 
   /// Serializes this IssueModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -62,14 +60,12 @@ abstract class $IssueModelCopyWith<$Res> {
       IssueStatus status,
       String? title,
       String? description,
-      String? audioFileUrl,
-      String? transcriptionRaw,
-      double? detectionConfidence,
       int priority,
       DateTime? resolvedAt,
       DateTime createdAt,
       DateTime updatedAt,
-      List<String> photoUrls});
+      List<String> photoUrls,
+      List<String> audioUrls});
 }
 
 /// @nodoc
@@ -95,14 +91,12 @@ class _$IssueModelCopyWithImpl<$Res, $Val extends IssueModel>
     Object? status = null,
     Object? title = freezed,
     Object? description = freezed,
-    Object? audioFileUrl = freezed,
-    Object? transcriptionRaw = freezed,
-    Object? detectionConfidence = freezed,
     Object? priority = null,
     Object? resolvedAt = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
     Object? photoUrls = null,
+    Object? audioUrls = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -137,18 +131,6 @@ class _$IssueModelCopyWithImpl<$Res, $Val extends IssueModel>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
-      audioFileUrl: freezed == audioFileUrl
-          ? _value.audioFileUrl
-          : audioFileUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      transcriptionRaw: freezed == transcriptionRaw
-          ? _value.transcriptionRaw
-          : transcriptionRaw // ignore: cast_nullable_to_non_nullable
-              as String?,
-      detectionConfidence: freezed == detectionConfidence
-          ? _value.detectionConfidence
-          : detectionConfidence // ignore: cast_nullable_to_non_nullable
-              as double?,
       priority: null == priority
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
@@ -168,6 +150,10 @@ class _$IssueModelCopyWithImpl<$Res, $Val extends IssueModel>
       photoUrls: null == photoUrls
           ? _value.photoUrls
           : photoUrls // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      audioUrls: null == audioUrls
+          ? _value.audioUrls
+          : audioUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
     ) as $Val);
   }
@@ -190,14 +176,12 @@ abstract class _$$IssueModelImplCopyWith<$Res>
       IssueStatus status,
       String? title,
       String? description,
-      String? audioFileUrl,
-      String? transcriptionRaw,
-      double? detectionConfidence,
       int priority,
       DateTime? resolvedAt,
       DateTime createdAt,
       DateTime updatedAt,
-      List<String> photoUrls});
+      List<String> photoUrls,
+      List<String> audioUrls});
 }
 
 /// @nodoc
@@ -221,14 +205,12 @@ class __$$IssueModelImplCopyWithImpl<$Res>
     Object? status = null,
     Object? title = freezed,
     Object? description = freezed,
-    Object? audioFileUrl = freezed,
-    Object? transcriptionRaw = freezed,
-    Object? detectionConfidence = freezed,
     Object? priority = null,
     Object? resolvedAt = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
     Object? photoUrls = null,
+    Object? audioUrls = null,
   }) {
     return _then(_$IssueModelImpl(
       id: null == id
@@ -263,18 +245,6 @@ class __$$IssueModelImplCopyWithImpl<$Res>
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
               as String?,
-      audioFileUrl: freezed == audioFileUrl
-          ? _value.audioFileUrl
-          : audioFileUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
-      transcriptionRaw: freezed == transcriptionRaw
-          ? _value.transcriptionRaw
-          : transcriptionRaw // ignore: cast_nullable_to_non_nullable
-              as String?,
-      detectionConfidence: freezed == detectionConfidence
-          ? _value.detectionConfidence
-          : detectionConfidence // ignore: cast_nullable_to_non_nullable
-              as double?,
       priority: null == priority
           ? _value.priority
           : priority // ignore: cast_nullable_to_non_nullable
@@ -295,6 +265,10 @@ class __$$IssueModelImplCopyWithImpl<$Res>
           ? _value._photoUrls
           : photoUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      audioUrls: null == audioUrls
+          ? _value._audioUrls
+          : audioUrls // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -311,15 +285,14 @@ class _$IssueModelImpl implements _IssueModel {
       this.status = IssueStatus.open,
       this.title,
       this.description,
-      this.audioFileUrl,
-      this.transcriptionRaw,
-      this.detectionConfidence,
       this.priority = 2,
       this.resolvedAt,
       required this.createdAt,
       required this.updatedAt,
-      final List<String> photoUrls = const []})
-      : _photoUrls = photoUrls;
+      final List<String> photoUrls = const [],
+      final List<String> audioUrls = const []})
+      : _photoUrls = photoUrls,
+        _audioUrls = audioUrls;
 
   factory _$IssueModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$IssueModelImplFromJson(json);
@@ -343,12 +316,6 @@ class _$IssueModelImpl implements _IssueModel {
   @override
   final String? description;
   @override
-  final String? audioFileUrl;
-  @override
-  final String? transcriptionRaw;
-  @override
-  final double? detectionConfidence;
-  @override
   @JsonKey()
   final int priority;
   @override
@@ -366,9 +333,18 @@ class _$IssueModelImpl implements _IssueModel {
     return EqualUnmodifiableListView(_photoUrls);
   }
 
+  final List<String> _audioUrls;
+  @override
+  @JsonKey()
+  List<String> get audioUrls {
+    if (_audioUrls is EqualUnmodifiableListView) return _audioUrls;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_audioUrls);
+  }
+
   @override
   String toString() {
-    return 'IssueModel(id: $id, roomId: $roomId, createdBy: $createdBy, assignedTrade: $assignedTrade, assignedTo: $assignedTo, status: $status, title: $title, description: $description, audioFileUrl: $audioFileUrl, transcriptionRaw: $transcriptionRaw, detectionConfidence: $detectionConfidence, priority: $priority, resolvedAt: $resolvedAt, createdAt: $createdAt, updatedAt: $updatedAt, photoUrls: $photoUrls)';
+    return 'IssueModel(id: $id, roomId: $roomId, createdBy: $createdBy, assignedTrade: $assignedTrade, assignedTo: $assignedTo, status: $status, title: $title, description: $description, priority: $priority, resolvedAt: $resolvedAt, createdAt: $createdAt, updatedAt: $updatedAt, photoUrls: $photoUrls, audioUrls: $audioUrls)';
   }
 
   @override
@@ -388,12 +364,6 @@ class _$IssueModelImpl implements _IssueModel {
             (identical(other.title, title) || other.title == title) &&
             (identical(other.description, description) ||
                 other.description == description) &&
-            (identical(other.audioFileUrl, audioFileUrl) ||
-                other.audioFileUrl == audioFileUrl) &&
-            (identical(other.transcriptionRaw, transcriptionRaw) ||
-                other.transcriptionRaw == transcriptionRaw) &&
-            (identical(other.detectionConfidence, detectionConfidence) ||
-                other.detectionConfidence == detectionConfidence) &&
             (identical(other.priority, priority) ||
                 other.priority == priority) &&
             (identical(other.resolvedAt, resolvedAt) ||
@@ -403,7 +373,9 @@ class _$IssueModelImpl implements _IssueModel {
             (identical(other.updatedAt, updatedAt) ||
                 other.updatedAt == updatedAt) &&
             const DeepCollectionEquality()
-                .equals(other._photoUrls, _photoUrls));
+                .equals(other._photoUrls, _photoUrls) &&
+            const DeepCollectionEquality()
+                .equals(other._audioUrls, _audioUrls));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
@@ -418,14 +390,12 @@ class _$IssueModelImpl implements _IssueModel {
       status,
       title,
       description,
-      audioFileUrl,
-      transcriptionRaw,
-      detectionConfidence,
       priority,
       resolvedAt,
       createdAt,
       updatedAt,
-      const DeepCollectionEquality().hash(_photoUrls));
+      const DeepCollectionEquality().hash(_photoUrls),
+      const DeepCollectionEquality().hash(_audioUrls));
 
   /// Create a copy of IssueModel
   /// with the given fields replaced by the non-null parameter values.
@@ -453,14 +423,12 @@ abstract class _IssueModel implements IssueModel {
       final IssueStatus status,
       final String? title,
       final String? description,
-      final String? audioFileUrl,
-      final String? transcriptionRaw,
-      final double? detectionConfidence,
       final int priority,
       final DateTime? resolvedAt,
       required final DateTime createdAt,
       required final DateTime updatedAt,
-      final List<String> photoUrls}) = _$IssueModelImpl;
+      final List<String> photoUrls,
+      final List<String> audioUrls}) = _$IssueModelImpl;
 
   factory _IssueModel.fromJson(Map<String, dynamic> json) =
       _$IssueModelImpl.fromJson;
@@ -482,12 +450,6 @@ abstract class _IssueModel implements IssueModel {
   @override
   String? get description;
   @override
-  String? get audioFileUrl;
-  @override
-  String? get transcriptionRaw;
-  @override
-  double? get detectionConfidence;
-  @override
   int get priority;
   @override
   DateTime? get resolvedAt;
@@ -497,6 +459,8 @@ abstract class _IssueModel implements IssueModel {
   DateTime get updatedAt;
   @override
   List<String> get photoUrls;
+  @override
+  List<String> get audioUrls;
 
   /// Create a copy of IssueModel
   /// with the given fields replaced by the non-null parameter values.

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../providers/recording_provider.dart';
-import '../../widgets/trade_badge.dart';
-import '../../../domain/enums/trade_type.dart';
 
 class RecordingSheet extends ConsumerStatefulWidget {
   final String roomId;
@@ -73,10 +71,9 @@ class _RecordingSheetState extends ConsumerState<RecordingSheet>
       case RecordingStatus.recording:
         return _buildRecording(notifier);
       case RecordingStatus.uploading:
-      case RecordingStatus.transcribing:
-        return _buildProcessing(state);
+        return _buildProcessing();
       case RecordingStatus.done:
-        return _buildDone(context, state, notifier);
+        return _buildDone(context, notifier);
       case RecordingStatus.error:
         return _buildError(context, state, notifier);
     }
@@ -91,7 +88,7 @@ class _RecordingSheetState extends ConsumerState<RecordingSheet>
         ),
         const SizedBox(height: 8),
         const Text(
-          'Describe the issue and mention the trade.\ne.g. "Plumber: the faucet is leaking."',
+          'Describe the issue you found in this room.',
           textAlign: TextAlign.center,
           style: TextStyle(color: Colors.grey),
         ),
@@ -143,9 +140,9 @@ class _RecordingSheetState extends ConsumerState<RecordingSheet>
         ),
         const SizedBox(height: 24),
         FilledButton.icon(
-          onPressed: () => notifier.stopAndProcess(widget.roomId),
+          onPressed: () => notifier.stopAndSave(widget.roomId),
           icon: const Icon(Icons.stop),
-          label: const Text('Stop & Process'),
+          label: const Text('Stop & Save'),
           style: FilledButton.styleFrom(backgroundColor: Colors.red),
         ),
         const SizedBox(height: 8),
@@ -157,28 +154,20 @@ class _RecordingSheetState extends ConsumerState<RecordingSheet>
     );
   }
 
-  Widget _buildProcessing(RecordingState state) {
-    final label = state.status == RecordingStatus.uploading
-        ? 'Uploading audio...'
-        : 'Transcribing with AI...';
-    return Column(
+  Widget _buildProcessing() {
+    return const Column(
       children: [
-        const CircularProgressIndicator(),
-        const SizedBox(height: 24),
-        Text(label, style: const TextStyle(fontSize: 16)),
+        CircularProgressIndicator(),
+        SizedBox(height: 24),
+        Text('Uploading audio...', style: TextStyle(fontSize: 16)),
       ],
     );
   }
 
   Widget _buildDone(
     BuildContext context,
-    RecordingState state,
     RecordingNotifier notifier,
   ) {
-    final trade = state.detectedTrade != null
-        ? TradeType.fromString(state.detectedTrade!)
-        : TradeType.unknown;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -186,29 +175,14 @@ class _RecordingSheetState extends ConsumerState<RecordingSheet>
           children: [
             Icon(Icons.check_circle, color: Colors.green, size: 28),
             SizedBox(width: 8),
-            Text('Issue Created', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text('Recording Saved', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ],
         ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            const Text('Detected trade: ', style: TextStyle(color: Colors.grey)),
-            TradeBadge(trade: trade),
-          ],
+        const SizedBox(height: 8),
+        const Text(
+          'You can play it back anytime from the issue detail screen.',
+          style: TextStyle(color: Colors.grey),
         ),
-        if (state.transcription != null) ...[
-          const SizedBox(height: 12),
-          const Text('Transcription:', style: TextStyle(fontWeight: FontWeight.w600)),
-          const SizedBox(height: 4),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(state.transcription!),
-          ),
-        ],
         const SizedBox(height: 24),
         SizedBox(
           width: double.infinity,

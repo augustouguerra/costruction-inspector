@@ -17,14 +17,12 @@ class IssueModel with _$IssueModel {
     @Default(IssueStatus.open) IssueStatus status,
     String? title,
     String? description,
-    String? audioFileUrl,
-    String? transcriptionRaw,
-    double? detectionConfidence,
     @Default(2) int priority,
     DateTime? resolvedAt,
     required DateTime createdAt,
     required DateTime updatedAt,
     @Default([]) List<String> photoUrls,
+    @Default([]) List<String> audioUrls,
   }) = _IssueModel;
 
   factory IssueModel.fromJson(Map<String, dynamic> json) =>

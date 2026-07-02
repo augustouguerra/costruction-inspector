@@ -17,26 +17,27 @@ class IssueRepository {
     return IssueModel.fromJson(res.data as Map<String, dynamic>);
   }
 
-  Future<void> updateAudioUrl(String issueId, String audioUrl) async {
-    // Audio URL is set server-side during process-audio; no separate call needed.
-  }
-
   Future<void> updateStatus(String issueId, IssueStatus status) async {
     await _api.dio.patch('/issues/$issueId/status', data: {
       'status': status.toDbString(),
     });
   }
 
-  Future<Map<String, dynamic>> processAudio(String issueId, String localPath) async {
+  Future<void> uploadAudio(String issueId, String localPath) async {
     final formData = FormData.fromMap({
       'audio': await MultipartFile.fromFile(localPath, filename: 'recording.m4a'),
     });
-    final res = await _api.dio.post(
-      '/issues/$issueId/process-audio',
+    await _api.dio.post(
+      '/issues/$issueId/audio',
       data: formData,
       options: Options(contentType: 'multipart/form-data'),
     );
-    return res.data as Map<String, dynamic>;
+  }
+
+  Future<List<String>> fetchAudioUrls(String issueId) async {
+    final res = await _api.dio.get('/issues/$issueId/audio');
+    final baseUrl = _api.dio.options.baseUrl.replaceAll('/api', '');
+    return (res.data as List).map((e) => '$baseUrl${e['url']}').toList();
   }
 
   Future<void> addPhoto(String issueId, String localPath) async {

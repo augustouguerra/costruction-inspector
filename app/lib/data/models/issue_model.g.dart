@@ -19,9 +19,6 @@ _$IssueModelImpl _$$IssueModelImplFromJson(Map<String, dynamic> json) =>
           IssueStatus.open,
       title: json['title'] as String?,
       description: json['description'] as String?,
-      audioFileUrl: json['audio_file_url'] as String?,
-      transcriptionRaw: json['transcription_raw'] as String?,
-      detectionConfidence: (json['detection_confidence'] as num?)?.toDouble(),
       priority: (json['priority'] as num?)?.toInt() ?? 2,
       resolvedAt: json['resolved_at'] == null
           ? null
@@ -29,6 +26,10 @@ _$IssueModelImpl _$$IssueModelImplFromJson(Map<String, dynamic> json) =>
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       photoUrls: (json['photo_urls'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
+      audioUrls: (json['audio_urls'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
@@ -44,14 +45,12 @@ Map<String, dynamic> _$$IssueModelImplToJson(_$IssueModelImpl instance) =>
       'status': _$IssueStatusEnumMap[instance.status]!,
       'title': instance.title,
       'description': instance.description,
-      'audio_file_url': instance.audioFileUrl,
-      'transcription_raw': instance.transcriptionRaw,
-      'detection_confidence': instance.detectionConfidence,
       'priority': instance.priority,
       'resolved_at': instance.resolvedAt?.toIso8601String(),
       'created_at': instance.createdAt.toIso8601String(),
       'updated_at': instance.updatedAt.toIso8601String(),
       'photo_urls': instance.photoUrls,
+      'audio_urls': instance.audioUrls,
     };
 
 const _$TradeTypeEnumMap = {

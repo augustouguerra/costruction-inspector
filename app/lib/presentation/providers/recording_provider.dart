@@ -4,38 +4,26 @@ import '../../core/services/audio_service.dart';
 import '../../data/repositories/issue_repository.dart';
 import 'issue_provider.dart';
 
-enum RecordingStatus { idle, recording, uploading, transcribing, done, error }
+enum RecordingStatus { idle, recording, uploading, done, error }
 
 class RecordingState {
   final RecordingStatus status;
-  final String? transcription;
-  final String? detectedTrade;
-  final double? confidence;
   final String? errorMessage;
   final String? issueId;
 
   const RecordingState({
     required this.status,
-    this.transcription,
-    this.detectedTrade,
-    this.confidence,
     this.errorMessage,
     this.issueId,
   });
 
   RecordingState copyWith({
     RecordingStatus? status,
-    String? transcription,
-    String? detectedTrade,
-    double? confidence,
     String? errorMessage,
     String? issueId,
   }) =>
       RecordingState(
         status: status ?? this.status,
-        transcription: transcription ?? this.transcription,
-        detectedTrade: detectedTrade ?? this.detectedTrade,
-        confidence: confidence ?? this.confidence,
         errorMessage: errorMessage ?? this.errorMessage,
         issueId: issueId ?? this.issueId,
       );
@@ -63,7 +51,7 @@ class RecordingNotifier extends StateNotifier<RecordingState> {
     state = state.copyWith(status: RecordingStatus.recording);
   }
 
-  Future<void> stopAndProcess(String roomId) async {
+  Future<void> stopAndSave(String roomId) async {
     final localPath = await _audioService.stopRecording();
     if (localPath == null) {
       state = state.copyWith(
@@ -77,20 +65,11 @@ class RecordingNotifier extends StateNotifier<RecordingState> {
 
     try {
       final issue = await _issueRepository.createIssue(roomId: roomId);
+      state = state.copyWith(issueId: issue.id);
 
-      state = state.copyWith(
-        status: RecordingStatus.transcribing,
-        issueId: issue.id,
-      );
+      await _issueRepository.uploadAudio(issue.id, localPath);
 
-      final data = await _issueRepository.processAudio(issue.id, localPath);
-
-      state = state.copyWith(
-        status: RecordingStatus.done,
-        transcription: data['transcription'] as String?,
-        detectedTrade: data['trade'] as String?,
-        confidence: (data['confidence'] as num?)?.toDouble(),
-      );
+      state = state.copyWith(status: RecordingStatus.done);
     } catch (e) {
       state = state.copyWith(
         status: RecordingStatus.error,

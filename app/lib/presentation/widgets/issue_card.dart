@@ -72,7 +72,7 @@ class IssueCard extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  if (issue.audioFileUrl != null)
+                  if (issue.audioUrls.isNotEmpty)
                     const Icon(Icons.mic, size: 14, color: Colors.grey),
                   if (issue.photoUrls.isNotEmpty) ...[
                     const SizedBox(width: 4),

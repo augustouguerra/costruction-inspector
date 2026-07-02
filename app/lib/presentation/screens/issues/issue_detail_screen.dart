@@ -9,6 +9,7 @@ import '../../../data/models/issue_model.dart';
 import '../../../data/repositories/issue_repository.dart' show IssueRepository;
 import '../../../domain/enums/issue_status.dart';
 import '../../providers/issue_provider.dart';
+import '../../widgets/audio_player_tile.dart';
 import '../../widgets/trade_badge.dart';
 
 class IssueDetailScreen extends ConsumerStatefulWidget {
@@ -22,6 +23,7 @@ class IssueDetailScreen extends ConsumerStatefulWidget {
 class _IssueDetailScreenState extends ConsumerState<IssueDetailScreen> {
   IssueModel? _issue;
   List<String> _photoUrls = [];
+  List<String> _audioUrls = [];
   bool _loading = true;
 
   @override
@@ -34,8 +36,16 @@ class _IssueDetailScreenState extends ConsumerState<IssueDetailScreen> {
     final repo = ref.read(issueRepositoryProvider);
     final issue = await repo.fetchIssue(widget.issueId);
     if (issue != null) {
-      final urls = await repo.fetchPhotoUrls(widget.issueId);
-      if (mounted) setState(() { _issue = issue; _photoUrls = urls; _loading = false; });
+      final photoUrls = await repo.fetchPhotoUrls(widget.issueId);
+      final audioUrls = await repo.fetchAudioUrls(widget.issueId);
+      if (mounted) {
+        setState(() {
+          _issue = issue;
+          _photoUrls = photoUrls;
+          _audioUrls = audioUrls;
+          _loading = false;
+        });
+      }
     }
   }
 
@@ -91,7 +101,7 @@ class _IssueDetailScreenState extends ConsumerState<IssueDetailScreen> {
             ],
             if (issue.description != null) ...[
               const SizedBox(height: 12),
-              const Text('Transcription', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.grey)),
+              const Text('Description', style: TextStyle(fontWeight: FontWeight.w600, color: Colors.grey)),
               const SizedBox(height: 4),
               Container(
                 width: double.infinity,
@@ -103,14 +113,13 @@ class _IssueDetailScreenState extends ConsumerState<IssueDetailScreen> {
                 child: Text(issue.description!),
               ),
             ],
-            if (issue.audioFileUrl != null) ...[
-              const SizedBox(height: 12),
-              const Row(
-                children: [
-                  Icon(Icons.audio_file, color: Colors.grey),
-                  SizedBox(width: 8),
-                  Text('Audio recording attached', style: TextStyle(color: Colors.grey)),
-                ],
+            if (_audioUrls.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              const Text('Recordings', style: TextStyle(fontWeight: FontWeight.w600)),
+              const SizedBox(height: 8),
+              ...List.generate(
+                _audioUrls.length,
+                (i) => AudioPlayerTile(url: _audioUrls[i], index: i),
               ),
             ],
             if (_photoUrls.isNotEmpty) ...[
