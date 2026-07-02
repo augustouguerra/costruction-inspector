@@ -179,6 +179,18 @@ class _IssueDetailScreenState extends ConsumerState<IssueDetailScreen> {
                         _formatDate(issue.createdAt),
                         style: const TextStyle(color: Colors.grey, fontSize: 12),
                       ),
+                      if (issue.creator != null) ...[
+                        const SizedBox(width: 12),
+                        const Icon(Icons.person_outline, size: 13, color: Colors.grey),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            issue.creator!.fullName,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(color: Colors.grey, fontSize: 12),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ],
@@ -256,23 +268,62 @@ class _StatusDropdown extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-      decoration: BoxDecoration(
-        color: color.withAlpha(26),
-        border: Border.all(color: color),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<IssueStatus>(
-          value: current,
-          icon: Icon(Icons.arrow_drop_down, color: color),
-          style: TextStyle(color: color, fontSize: 13, fontWeight: FontWeight.w600),
-          dropdownColor: Colors.white,
-          items: IssueStatus.values
-              .map((s) => DropdownMenuItem(value: s, child: Text(s.label)))
-              .toList(),
-          onChanged: (v) { if (v != null) onChanged(v); },
+    return PopupMenuButton<IssueStatus>(
+      initialValue: current,
+      onSelected: onChanged,
+      offset: const Offset(0, 40),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 6,
+      itemBuilder: (context) => IssueStatus.values
+          .map(
+            (s) => PopupMenuItem(
+              value: s,
+              child: Row(
+                children: [
+                  Container(
+                    width: 9,
+                    height: 9,
+                    decoration: BoxDecoration(color: _statusColor(s), shape: BoxShape.circle),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    s.label,
+                    style: TextStyle(
+                      fontWeight: s == current ? FontWeight.w700 : FontWeight.w500,
+                      color: AppColors.onSurface,
+                    ),
+                  ),
+                  if (s == current) ...[
+                    const Spacer(),
+                    Icon(Icons.check, size: 16, color: _statusColor(s)),
+                  ],
+                ],
+              ),
+            ),
+          )
+          .toList(),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+        decoration: BoxDecoration(
+          color: color.withAlpha(26),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: 7),
+            Text(
+              current.label,
+              style: TextStyle(color: color, fontSize: 13, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(width: 2),
+            Icon(Icons.expand_more, color: color, size: 18),
+          ],
         ),
       ),
     );

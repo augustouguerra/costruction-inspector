@@ -38,7 +38,8 @@
       "Bash(npm run *)",
       "Bash(touch uploads/.gitkeep uploads/audio/.gitkeep uploads/photos/.gitkeep)",
       "Bash(git status *)",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "Bash(dart analyze *)"
     ]
   }
 }
