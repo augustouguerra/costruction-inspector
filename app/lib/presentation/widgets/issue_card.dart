@@ -69,6 +69,19 @@ class IssueCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
+              if (issue.creator != null) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    const Icon(Icons.person_outline, size: 12, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Text(
+                      issue.creator!.fullName,
+                      style: const TextStyle(fontSize: 11, color: Colors.grey),
+                    ),
+                  ],
+                ),
+              ],
               const SizedBox(height: 8),
               Row(
                 children: [
@@ -89,19 +102,6 @@ class IssueCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (issue.creator != null) ...[
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    const Icon(Icons.person_outline, size: 12, color: Colors.grey),
-                    const SizedBox(width: 4),
-                    Text(
-                      issue.creator!.fullName,
-                      style: const TextStyle(fontSize: 11, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ],
             ],
           ),
         ),
