@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/app_colors.dart';
 import '../../providers/issue_provider.dart';
 import '../../providers/room_provider.dart';
 import '../../widgets/issue_card.dart';
@@ -38,35 +39,85 @@ class RoomDetailScreen extends ConsumerWidget {
         );
 
     return Scaffold(
+      backgroundColor: AppColors.surface,
       appBar: AppBar(title: Text(roomName ?? 'Room')),
       body: issuesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              const SizedBox(height: 12),
+              Text('Error: $e', textAlign: TextAlign.center),
+            ],
+          ),
+        ),
         data: (issues) {
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
             children: [
               Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  'Issues',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                padding: const EdgeInsets.only(bottom: 12),
+                child: Row(
+                  children: [
+                    Text(
+                      'Issues',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.onSurface,
+                          ),
+                    ),
+                    if (issues.isNotEmpty) ...[
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withAlpha(26),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          '${issues.length}',
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
+                    ],
+                  ],
                 ),
               ),
               if (issues.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 48),
                   child: Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.check_circle_outline, size: 64, color: Colors.green),
-                        SizedBox(height: 16),
-                        Text('No issues found.', style: TextStyle(fontSize: 18)),
-                        SizedBox(height: 8),
-                        Text('Tap the mic to record a new issue.', style: TextStyle(color: Colors.grey)),
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: AppColors.success.withAlpha(26),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.check_circle_outline,
+                            size: 56,
+                            color: AppColors.success,
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        const Text(
+                          'No issues found',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 6),
+                        const Text(
+                          'Tap the mic to record a new issue.',
+                          style: TextStyle(color: Colors.grey),
+                        ),
                       ],
                     ),
                   ),

@@ -37,12 +37,6 @@ class ApartmentListScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(floorLabel ?? 'Floor'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => _showAddApartment(context, ref),
-          ),
-        ],
       ),
       body: apartmentsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

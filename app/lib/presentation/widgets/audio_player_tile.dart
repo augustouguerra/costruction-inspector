@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
+import '../../core/theme/app_colors.dart';
+
 class AudioPlayerTile extends StatefulWidget {
   final String url;
   final int index;
@@ -22,6 +24,11 @@ class _AudioPlayerTileState extends State<AudioPlayerTile> {
   }
 
   Future<void> _togglePlay() async {
+    if (_player.processingState == ProcessingState.completed) {
+      await _player.seek(Duration.zero);
+      await _player.play();
+      return;
+    }
     if (_player.playing) {
       await _player.pause();
       return;
@@ -49,8 +56,9 @@ class _AudioPlayerTileState extends State<AudioPlayerTile> {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(8),
+        color: AppColors.primary.withAlpha(13),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: AppColors.primary.withAlpha(26)),
       ),
       child: Row(
         children: [
@@ -64,14 +72,21 @@ class _AudioPlayerTileState extends State<AudioPlayerTile> {
                 : StreamBuilder<PlayerState>(
                     stream: _player.playerStateStream,
                     builder: (_, snapshot) {
-                      final playing = snapshot.data?.playing ?? false;
-                      return Icon(playing ? Icons.pause_circle : Icons.play_circle);
+                      final playing = (snapshot.data?.playing ?? false) &&
+                          snapshot.data?.processingState != ProcessingState.completed;
+                      return Icon(
+                        playing ? Icons.pause_circle : Icons.play_circle,
+                        color: AppColors.primary,
+                      );
                     },
                   ),
             onPressed: _loading ? null : _togglePlay,
           ),
           Expanded(
-            child: Text('Recording ${widget.index + 1}'),
+            child: Text(
+              'Recording ${widget.index + 1}',
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
           ),
           StreamBuilder<Duration>(
             stream: _player.positionStream,

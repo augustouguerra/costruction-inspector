@@ -40,12 +40,6 @@ class RoomListScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(apartmentIdentifier ?? 'Apartment'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => _showAddRoom(context, ref),
-          ),
-        ],
       ),
       body: roomsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
