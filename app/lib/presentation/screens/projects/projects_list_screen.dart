@@ -44,7 +44,7 @@ class ProjectsListScreen extends ConsumerWidget {
                   title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.bold)),
                   subtitle: p.address != null ? Text(p.address!) : null,
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.push('/projects/${p.id}'),
+                  onTap: () => context.push('/projects/${p.id}', extra: p),
                 ),
               );
             },

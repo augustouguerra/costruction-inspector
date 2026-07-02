@@ -5,53 +5,75 @@ import 'package:go_router/go_router.dart';
 
 import '../../../data/repositories/floor_repository.dart' show FloorRepository;
 import '../../providers/floor_provider.dart';
+import '../../providers/project_provider.dart';
 
 class ProjectDetailScreen extends ConsumerWidget {
   final String projectId;
-  const ProjectDetailScreen({super.key, required this.projectId});
+  final String? initialProjectName;
+  const ProjectDetailScreen({
+    super.key,
+    required this.projectId,
+    this.initialProjectName,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final projectAsync = ref.watch(projectProvider(projectId));
     final floorsAsync = ref.watch(floorsProvider(projectId));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Floors'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => _showAddFloor(context, ref),
-          ),
-        ],
+        title: projectAsync.when(
+          loading: () => Text(initialProjectName ?? 'Project'),
+          error: (e, _) => Text(initialProjectName ?? 'Project'),
+          data: (project) => Text(project.name),
+        ),
       ),
       body: floorsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (floors) {
-          if (floors.isEmpty) {
-            return const Center(
-              child: Text('No floors yet.\nTap + to add one.', textAlign: TextAlign.center),
-            );
-          }
-          return ListView.builder(
+          return ListView(
             padding: const EdgeInsets.all(16),
-            itemCount: floors.length,
-            itemBuilder: (_, i) {
-              final f = floors[i];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  leading: CircleAvatar(child: Text('${f.number}')),
-                  title: Text(f.label, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.push(
-                    '/projects/$projectId/floors/${f.id}/apartments',
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  'Floors',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+              if (floors.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Center(
+                    child: Text('No floors yet.\nTap + to add one.', textAlign: TextAlign.center),
+                  ),
+                )
+              else
+                ...floors.map(
+                  (f) => Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ListTile(
+                      leading: CircleAvatar(child: Text('${f.number}')),
+                      title: Text(f.label, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push(
+                        '/projects/$projectId/floors/${f.id}/apartments',
+                        extra: f,
+                      ),
+                    ),
                   ),
                 ),
-              );
-            },
+            ],
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _showAddFloor(context, ref),
+        child: const Icon(Icons.add),
       ),
     );
   }

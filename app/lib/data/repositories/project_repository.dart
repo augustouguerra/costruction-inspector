@@ -10,6 +10,11 @@ class ProjectRepository {
     return (res.data as List).map((e) => ProjectModel.fromJson(e as Map<String, dynamic>)).toList();
   }
 
+  Future<ProjectModel> fetchProject(String projectId) async {
+    final res = await _api.dio.get('/projects/$projectId');
+    return ProjectModel.fromJson(res.data as Map<String, dynamic>);
+  }
+
   Future<ProjectModel> createProject({
     required String name,
     String? address,

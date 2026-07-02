@@ -3,6 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../presentation/providers/auth_provider.dart';
+import '../../data/models/project_model.dart';
+import '../../data/models/floor_model.dart';
+import '../../data/models/apartment_model.dart';
+import '../../data/models/room_model.dart';
 import '../../presentation/screens/auth/login_screen.dart';
 import '../../presentation/screens/auth/register_screen.dart';
 import '../../presentation/screens/projects/projects_list_screen.dart';
@@ -37,14 +41,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/projects', builder: (_, __) => const ProjectsListScreen()),
       GoRoute(
         path: '/projects/:projectId',
-        builder: (_, state) =>
-            ProjectDetailScreen(projectId: state.pathParameters['projectId']!),
+        builder: (_, state) => ProjectDetailScreen(
+          projectId: state.pathParameters['projectId']!,
+          initialProjectName: (state.extra as ProjectModel?)?.name,
+        ),
       ),
       GoRoute(
         path: '/projects/:projectId/floors/:floorId/apartments',
         builder: (_, state) => ApartmentListScreen(
           projectId: state.pathParameters['projectId']!,
           floorId: state.pathParameters['floorId']!,
+          initialFloorLabel: (state.extra as FloorModel?)?.label,
         ),
       ),
       GoRoute(
@@ -53,6 +60,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           projectId: state.pathParameters['projectId']!,
           floorId: state.pathParameters['floorId']!,
           apartmentId: state.pathParameters['apartmentId']!,
+          initialApartmentIdentifier: (state.extra as ApartmentModel?)?.identifier,
         ),
       ),
       GoRoute(
@@ -62,6 +70,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           floorId: state.pathParameters['floorId']!,
           apartmentId: state.pathParameters['apartmentId']!,
           roomId: state.pathParameters['roomId']!,
+          initialRoomName: (state.extra as RoomModel?)?.name,
         ),
       ),
       GoRoute(

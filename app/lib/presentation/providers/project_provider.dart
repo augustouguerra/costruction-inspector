@@ -12,3 +12,8 @@ final projectsProvider = FutureProvider<List<ProjectModel>>((ref) {
   ref.watch(authTokenProvider);
   return ref.read(projectRepositoryProvider).fetchProjects();
 });
+
+final projectProvider =
+    FutureProvider.family<ProjectModel, String>((ref, projectId) {
+  return ref.read(projectRepositoryProvider).fetchProject(projectId);
+});

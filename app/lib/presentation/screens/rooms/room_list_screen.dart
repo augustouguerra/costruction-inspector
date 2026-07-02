@@ -5,27 +5,41 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../data/repositories/room_repository.dart' show RoomRepository;
+import '../../providers/apartment_provider.dart';
 import '../../providers/room_provider.dart';
 
 class RoomListScreen extends ConsumerWidget {
   final String projectId;
   final String floorId;
   final String apartmentId;
+  final String? initialApartmentIdentifier;
 
   const RoomListScreen({
     super.key,
     required this.projectId,
     required this.floorId,
     required this.apartmentId,
+    this.initialApartmentIdentifier,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final roomsAsync = ref.watch(roomsProvider(apartmentId));
+    final apartmentsAsync = ref.watch(apartmentsProvider(floorId));
+    final apartmentIdentifier = initialApartmentIdentifier ??
+        apartmentsAsync.maybeWhen(
+          data: (apartments) {
+            for (final a in apartments) {
+              if (a.id == apartmentId) return a.identifier;
+            }
+            return null;
+          },
+          orElse: () => null,
+        );
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Rooms'),
+        title: Text(apartmentIdentifier ?? 'Apartment'),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
@@ -37,28 +51,41 @@ class RoomListScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (rooms) {
-          if (rooms.isEmpty) {
-            return const Center(
-              child: Text('No rooms yet.\nTap + to add one.', textAlign: TextAlign.center),
-            );
-          }
-          return ListView.builder(
+          return ListView(
             padding: const EdgeInsets.all(16),
-            itemCount: rooms.length,
-            itemBuilder: (_, i) {
-              final r = rooms[i];
-              return Card(
-                margin: const EdgeInsets.only(bottom: 12),
-                child: ListTile(
-                  leading: const Icon(Icons.meeting_room),
-                  title: Text(r.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => context.push(
-                    '/projects/$projectId/floors/$floorId/apartments/$apartmentId/rooms/${r.id}',
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  'Rooms',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+              ),
+              if (rooms.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Center(
+                    child: Text('No rooms yet.\nTap + to add one.', textAlign: TextAlign.center),
+                  ),
+                )
+              else
+                ...rooms.map(
+                  (r) => Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ListTile(
+                      leading: const Icon(Icons.meeting_room),
+                      title: Text(r.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => context.push(
+                        '/projects/$projectId/floors/$floorId/apartments/$apartmentId/rooms/${r.id}',
+                        extra: r,
+                      ),
+                    ),
                   ),
                 ),
-              );
-            },
+            ],
           );
         },
       ),
