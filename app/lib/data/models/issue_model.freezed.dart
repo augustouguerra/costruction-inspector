@@ -25,6 +25,7 @@ mixin _$IssueModel {
   String get createdBy => throw _privateConstructorUsedError;
   TradeType get assignedTrade => throw _privateConstructorUsedError;
   String? get assignedTo => throw _privateConstructorUsedError;
+  @JsonKey(fromJson: IssueStatus.fromString, toJson: _issueStatusToJson)
   IssueStatus get status => throw _privateConstructorUsedError;
   String? get title => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
@@ -58,6 +59,7 @@ abstract class $IssueModelCopyWith<$Res> {
       String createdBy,
       TradeType assignedTrade,
       String? assignedTo,
+      @JsonKey(fromJson: IssueStatus.fromString, toJson: _issueStatusToJson)
       IssueStatus status,
       String? title,
       String? description,
@@ -196,6 +198,7 @@ abstract class _$$IssueModelImplCopyWith<$Res>
       String createdBy,
       TradeType assignedTrade,
       String? assignedTo,
+      @JsonKey(fromJson: IssueStatus.fromString, toJson: _issueStatusToJson)
       IssueStatus status,
       String? title,
       String? description,
@@ -314,6 +317,7 @@ class _$IssueModelImpl implements _IssueModel {
       required this.createdBy,
       this.assignedTrade = TradeType.unknown,
       this.assignedTo,
+      @JsonKey(fromJson: IssueStatus.fromString, toJson: _issueStatusToJson)
       this.status = IssueStatus.open,
       this.title,
       this.description,
@@ -342,7 +346,7 @@ class _$IssueModelImpl implements _IssueModel {
   @override
   final String? assignedTo;
   @override
-  @JsonKey()
+  @JsonKey(fromJson: IssueStatus.fromString, toJson: _issueStatusToJson)
   final IssueStatus status;
   @override
   final String? title;
@@ -458,6 +462,7 @@ abstract class _IssueModel implements IssueModel {
       required final String createdBy,
       final TradeType assignedTrade,
       final String? assignedTo,
+      @JsonKey(fromJson: IssueStatus.fromString, toJson: _issueStatusToJson)
       final IssueStatus status,
       final String? title,
       final String? description,
@@ -483,6 +488,7 @@ abstract class _IssueModel implements IssueModel {
   @override
   String? get assignedTo;
   @override
+  @JsonKey(fromJson: IssueStatus.fromString, toJson: _issueStatusToJson)
   IssueStatus get status;
   @override
   String? get title;

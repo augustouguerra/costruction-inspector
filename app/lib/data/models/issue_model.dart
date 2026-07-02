@@ -14,7 +14,9 @@ class IssueModel with _$IssueModel {
     required String createdBy,
     @Default(TradeType.unknown) TradeType assignedTrade,
     String? assignedTo,
-    @Default(IssueStatus.open) IssueStatus status,
+    @Default(IssueStatus.open)
+    @JsonKey(fromJson: IssueStatus.fromString, toJson: _issueStatusToJson)
+    IssueStatus status,
     String? title,
     String? description,
     @Default(2) int priority,
@@ -29,6 +31,8 @@ class IssueModel with _$IssueModel {
   factory IssueModel.fromJson(Map<String, dynamic> json) =>
       _$IssueModelFromJson(json);
 }
+
+String _issueStatusToJson(IssueStatus status) => status.toDbString();
 
 @freezed
 class IssueCreatorModel with _$IssueCreatorModel {

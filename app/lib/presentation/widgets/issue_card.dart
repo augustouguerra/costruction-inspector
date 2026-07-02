@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../data/models/issue_model.dart';
 import '../../domain/enums/issue_status.dart';
+import '../providers/issue_provider.dart';
 import 'trade_badge.dart';
 
-class IssueCard extends StatelessWidget {
+class IssueCard extends ConsumerWidget {
   final IssueModel issue;
 
   const IssueCard({super.key, required this.issue});
@@ -20,7 +22,7 @@ class IssueCard extends StatelessWidget {
       };
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final statusColor = _statusColor(issue.status);
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -31,7 +33,9 @@ class IssueCard extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () => context.push('/issues/${issue.id}'),
+        onTap: () => context.push('/issues/${issue.id}').then(
+              (_) => ref.invalidate(roomIssuesProvider(issue.roomId)),
+            ),
         child: IntrinsicHeight(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,

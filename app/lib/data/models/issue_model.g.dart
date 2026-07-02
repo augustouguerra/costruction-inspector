@@ -15,8 +15,9 @@ _$IssueModelImpl _$$IssueModelImplFromJson(Map<String, dynamic> json) =>
           $enumDecodeNullable(_$TradeTypeEnumMap, json['assigned_trade']) ??
               TradeType.unknown,
       assignedTo: json['assigned_to'] as String?,
-      status: $enumDecodeNullable(_$IssueStatusEnumMap, json['status']) ??
-          IssueStatus.open,
+      status: json['status'] == null
+          ? IssueStatus.open
+          : IssueStatus.fromString(json['status'] as String),
       title: json['title'] as String?,
       description: json['description'] as String?,
       priority: (json['priority'] as num?)?.toInt() ?? 2,
@@ -45,7 +46,7 @@ Map<String, dynamic> _$$IssueModelImplToJson(_$IssueModelImpl instance) =>
       'created_by': instance.createdBy,
       'assigned_trade': _$TradeTypeEnumMap[instance.assignedTrade]!,
       'assigned_to': instance.assignedTo,
-      'status': _$IssueStatusEnumMap[instance.status]!,
+      'status': _issueStatusToJson(instance.status),
       'title': instance.title,
       'description': instance.description,
       'priority': instance.priority,
@@ -68,14 +69,6 @@ const _$TradeTypeEnumMap = {
   TradeType.glazier: 'glazier',
   TradeType.general: 'general',
   TradeType.unknown: 'unknown',
-};
-
-const _$IssueStatusEnumMap = {
-  IssueStatus.open: 'open',
-  IssueStatus.acknowledged: 'acknowledged',
-  IssueStatus.inProgress: 'inProgress',
-  IssueStatus.resolved: 'resolved',
-  IssueStatus.rejected: 'rejected',
 };
 
 _$IssueCreatorModelImpl _$$IssueCreatorModelImplFromJson(
