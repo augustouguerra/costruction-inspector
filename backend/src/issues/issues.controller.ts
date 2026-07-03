@@ -70,6 +70,21 @@ export class IssuesController {
     return this.issuesService.getPhotos(id);
   }
 
+  @Post('issues/:id/documents')
+  @UseInterceptors(FileInterceptor('document', { storage: memoryStorage() }))
+  addDocument(
+    @Request() req,
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.issuesService.addDocument(id, req.user.id, file);
+  }
+
+  @Get('issues/:id/documents')
+  getDocuments(@Param('id') id: string) {
+    return this.issuesService.getDocuments(id);
+  }
+
   @Post('issues/:id/comments')
   addComment(@Request() req, @Param('id') id: string, @Body() dto: AddCommentDto) {
     return this.issuesService.addComment(id, req.user.id, dto);

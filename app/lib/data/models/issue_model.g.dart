@@ -34,6 +34,10 @@ _$IssueModelImpl _$$IssueModelImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const [],
+      documentUrls: (json['document_urls'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList() ??
+          const [],
       creator: json['creator'] == null
           ? null
           : IssueCreatorModel.fromJson(json['creator'] as Map<String, dynamic>),
@@ -55,6 +59,7 @@ Map<String, dynamic> _$$IssueModelImplToJson(_$IssueModelImpl instance) =>
       'updated_at': instance.updatedAt.toIso8601String(),
       'photo_urls': instance.photoUrls,
       'audio_urls': instance.audioUrls,
+      'document_urls': instance.documentUrls,
       'creator': instance.creator,
     };
 

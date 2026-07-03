@@ -120,6 +120,14 @@ class IssueCard extends ConsumerWidget {
                               style: const TextStyle(fontSize: 12, color: Colors.grey),
                             ),
                           ],
+                          if (issue.documentUrls.isNotEmpty) ...[
+                            const SizedBox(width: 6),
+                            const Icon(Icons.description, size: 15, color: Colors.grey),
+                            Text(
+                              ' ${issue.documentUrls.length}',
+                              style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                          ],
                           const Spacer(),
                           Text(
                             _formatDate(issue.createdAt),

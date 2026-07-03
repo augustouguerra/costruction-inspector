@@ -25,6 +25,7 @@ class IssueModel with _$IssueModel {
     required DateTime updatedAt,
     @Default([]) List<String> photoUrls,
     @Default([]) List<String> audioUrls,
+    @Default([]) List<String> documentUrls,
     IssueCreatorModel? creator,
   }) = _IssueModel;
 

@@ -35,6 +35,7 @@ mixin _$IssueModel {
   DateTime get updatedAt => throw _privateConstructorUsedError;
   List<String> get photoUrls => throw _privateConstructorUsedError;
   List<String> get audioUrls => throw _privateConstructorUsedError;
+  List<String> get documentUrls => throw _privateConstructorUsedError;
   IssueCreatorModel? get creator => throw _privateConstructorUsedError;
 
   /// Serializes this IssueModel to a JSON map.
@@ -69,6 +70,7 @@ abstract class $IssueModelCopyWith<$Res> {
       DateTime updatedAt,
       List<String> photoUrls,
       List<String> audioUrls,
+      List<String> documentUrls,
       IssueCreatorModel? creator});
 
   $IssueCreatorModelCopyWith<$Res>? get creator;
@@ -103,6 +105,7 @@ class _$IssueModelCopyWithImpl<$Res, $Val extends IssueModel>
     Object? updatedAt = null,
     Object? photoUrls = null,
     Object? audioUrls = null,
+    Object? documentUrls = null,
     Object? creator = freezed,
   }) {
     return _then(_value.copyWith(
@@ -162,6 +165,10 @@ class _$IssueModelCopyWithImpl<$Res, $Val extends IssueModel>
           ? _value.audioUrls
           : audioUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      documentUrls: null == documentUrls
+          ? _value.documentUrls
+          : documentUrls // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       creator: freezed == creator
           ? _value.creator
           : creator // ignore: cast_nullable_to_non_nullable
@@ -208,6 +215,7 @@ abstract class _$$IssueModelImplCopyWith<$Res>
       DateTime updatedAt,
       List<String> photoUrls,
       List<String> audioUrls,
+      List<String> documentUrls,
       IssueCreatorModel? creator});
 
   @override
@@ -241,6 +249,7 @@ class __$$IssueModelImplCopyWithImpl<$Res>
     Object? updatedAt = null,
     Object? photoUrls = null,
     Object? audioUrls = null,
+    Object? documentUrls = null,
     Object? creator = freezed,
   }) {
     return _then(_$IssueModelImpl(
@@ -300,6 +309,10 @@ class __$$IssueModelImplCopyWithImpl<$Res>
           ? _value._audioUrls
           : audioUrls // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      documentUrls: null == documentUrls
+          ? _value._documentUrls
+          : documentUrls // ignore: cast_nullable_to_non_nullable
+              as List<String>,
       creator: freezed == creator
           ? _value.creator
           : creator // ignore: cast_nullable_to_non_nullable
@@ -327,9 +340,11 @@ class _$IssueModelImpl implements _IssueModel {
       required this.updatedAt,
       final List<String> photoUrls = const [],
       final List<String> audioUrls = const [],
+      final List<String> documentUrls = const [],
       this.creator})
       : _photoUrls = photoUrls,
-        _audioUrls = audioUrls;
+        _audioUrls = audioUrls,
+        _documentUrls = documentUrls;
 
   factory _$IssueModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$IssueModelImplFromJson(json);
@@ -379,12 +394,21 @@ class _$IssueModelImpl implements _IssueModel {
     return EqualUnmodifiableListView(_audioUrls);
   }
 
+  final List<String> _documentUrls;
+  @override
+  @JsonKey()
+  List<String> get documentUrls {
+    if (_documentUrls is EqualUnmodifiableListView) return _documentUrls;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_documentUrls);
+  }
+
   @override
   final IssueCreatorModel? creator;
 
   @override
   String toString() {
-    return 'IssueModel(id: $id, roomId: $roomId, createdBy: $createdBy, assignedTrade: $assignedTrade, assignedTo: $assignedTo, status: $status, title: $title, description: $description, priority: $priority, resolvedAt: $resolvedAt, createdAt: $createdAt, updatedAt: $updatedAt, photoUrls: $photoUrls, audioUrls: $audioUrls, creator: $creator)';
+    return 'IssueModel(id: $id, roomId: $roomId, createdBy: $createdBy, assignedTrade: $assignedTrade, assignedTo: $assignedTo, status: $status, title: $title, description: $description, priority: $priority, resolvedAt: $resolvedAt, createdAt: $createdAt, updatedAt: $updatedAt, photoUrls: $photoUrls, audioUrls: $audioUrls, documentUrls: $documentUrls, creator: $creator)';
   }
 
   @override
@@ -416,6 +440,8 @@ class _$IssueModelImpl implements _IssueModel {
                 .equals(other._photoUrls, _photoUrls) &&
             const DeepCollectionEquality()
                 .equals(other._audioUrls, _audioUrls) &&
+            const DeepCollectionEquality()
+                .equals(other._documentUrls, _documentUrls) &&
             (identical(other.creator, creator) || other.creator == creator));
   }
 
@@ -437,6 +463,7 @@ class _$IssueModelImpl implements _IssueModel {
       updatedAt,
       const DeepCollectionEquality().hash(_photoUrls),
       const DeepCollectionEquality().hash(_audioUrls),
+      const DeepCollectionEquality().hash(_documentUrls),
       creator);
 
   /// Create a copy of IssueModel
@@ -472,6 +499,7 @@ abstract class _IssueModel implements IssueModel {
       required final DateTime updatedAt,
       final List<String> photoUrls,
       final List<String> audioUrls,
+      final List<String> documentUrls,
       final IssueCreatorModel? creator}) = _$IssueModelImpl;
 
   factory _IssueModel.fromJson(Map<String, dynamic> json) =
@@ -506,6 +534,8 @@ abstract class _IssueModel implements IssueModel {
   List<String> get photoUrls;
   @override
   List<String> get audioUrls;
+  @override
+  List<String> get documentUrls;
   @override
   IssueCreatorModel? get creator;
 

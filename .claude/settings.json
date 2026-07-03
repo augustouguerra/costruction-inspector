@@ -39,7 +39,14 @@
       "Bash(touch uploads/.gitkeep uploads/audio/.gitkeep uploads/photos/.gitkeep)",
       "Bash(git status *)",
       "Bash(git check-ignore *)",
-      "Bash(dart analyze *)"
+      "Bash(dart analyze *)",
+      "Bash(git -C \"d:/workspace/proyectos/costruction-inspector\" status)",
+      "Bash(flutter pub *)",
+      "Bash(flutter build *)",
+      "Bash(PGPASSWORD='backendPass1234!!' psql -h localhost -U constructor_inspector_backend -d construction_inspector -c \"select id, \\\\\"issueId\\\\\", \\\\\"storagePath\\\\\", \\\\\"fileName\\\\\", \\\\\"createdAt\\\\\" from issue_documents order by \\\\\"createdAt\\\\\" desc limit 5;\")",
+      "Bash(adb -s emulator-5554 uninstall com.constructioninspector.app)",
+      "Bash(adb -s emulator-5554 install build/app/outputs/flutter-apk/app-debug.apk)",
+      "Bash(adb -s emulator-5554 install -r build/app/outputs/flutter-apk/app-debug.apk)"
     ]
   }
 }

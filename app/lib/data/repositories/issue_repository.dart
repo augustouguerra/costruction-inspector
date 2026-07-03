@@ -3,6 +3,12 @@ import '../../core/services/api_client.dart';
 import '../models/issue_model.dart';
 import '../../domain/enums/issue_status.dart';
 
+class IssueDocumentInfo {
+  final String url;
+  final String fileName;
+  const IssueDocumentInfo({required this.url, required this.fileName});
+}
+
 class IssueRepository {
   final ApiClient _api;
   IssueRepository(this._api);
@@ -55,6 +61,28 @@ class IssueRepository {
     final res = await _api.dio.get('/issues/$issueId/photos');
     final baseUrl = _api.dio.options.baseUrl.replaceAll('/api', '');
     return (res.data as List).map((e) => '$baseUrl${e['url']}').toList();
+  }
+
+  Future<void> addDocument(String issueId, String localPath, {String? fileName}) async {
+    final formData = FormData.fromMap({
+      'document': await MultipartFile.fromFile(localPath, filename: fileName),
+    });
+    await _api.dio.post(
+      '/issues/$issueId/documents',
+      data: formData,
+      options: Options(contentType: 'multipart/form-data'),
+    );
+  }
+
+  Future<List<IssueDocumentInfo>> fetchDocuments(String issueId) async {
+    final res = await _api.dio.get('/issues/$issueId/documents');
+    final baseUrl = _api.dio.options.baseUrl.replaceAll('/api', '');
+    return (res.data as List)
+        .map((e) => IssueDocumentInfo(
+              url: '$baseUrl${e['url']}',
+              fileName: e['file_name'] as String? ?? (e['url'] as String).split('/').last,
+            ))
+        .toList();
   }
 
   Future<IssueModel?> fetchIssue(String issueId) async {

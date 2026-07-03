@@ -17,6 +17,7 @@ export class IssuesService {
       include: {
         photos: true,
         audios: true,
+        documents: true,
         creator: { select: { id: true, fullName: true, email: true } },
       },
     });
@@ -24,6 +25,7 @@ export class IssuesService {
       ...i,
       photoUrls: i.photos.map((p) => `/uploads/${p.storagePath}`),
       audioUrls: i.audios.map((a) => `/uploads/${a.storagePath}`),
+      documentUrls: i.documents.map((d) => `/uploads/${d.storagePath}`),
     }));
   }
 
@@ -33,6 +35,7 @@ export class IssuesService {
       include: {
         photos: true,
         audios: true,
+        documents: true,
         comments: { include: { author: true } },
         creator: { select: { id: true, fullName: true, email: true } },
       },
@@ -42,6 +45,7 @@ export class IssuesService {
       ...issue,
       photoUrls: issue.photos.map((p) => `/uploads/${p.storagePath}`),
       audioUrls: issue.audios.map((a) => `/uploads/${a.storagePath}`),
+      documentUrls: issue.documents.map((d) => `/uploads/${d.storagePath}`),
     };
   }
 
@@ -110,6 +114,30 @@ export class IssuesService {
   async getPhotos(issueId: string) {
     const photos = await this.prisma.issuePhoto.findMany({ where: { issueId } });
     return photos.map((p) => ({ ...p, url: `/uploads/${p.storagePath}` }));
+  }
+
+  async addDocument(issueId: string, userId: string, file: Express.Multer.File) {
+    const uploadsDir = path.join(process.cwd(), process.env.UPLOADS_DIR ?? 'uploads', 'documents');
+    fs.mkdirSync(uploadsDir, { recursive: true });
+
+    const ext = path.extname(file.originalname);
+    const storagePath = `documents/${issueId}_${Date.now()}${ext}`;
+    const filePath = path.join(process.cwd(), process.env.UPLOADS_DIR ?? 'uploads', storagePath);
+    fs.writeFileSync(filePath, file.buffer);
+
+    const doc = await this.prisma.issueDocument.create({
+      data: { issueId, storagePath, fileName: file.originalname, uploadedBy: userId },
+    });
+
+    return { ...doc, url: `/uploads/${doc.storagePath}` };
+  }
+
+  async getDocuments(issueId: string) {
+    const documents = await this.prisma.issueDocument.findMany({
+      where: { issueId },
+      orderBy: { createdAt: 'desc' },
+    });
+    return documents.map((d) => ({ ...d, url: `/uploads/${d.storagePath}` }));
   }
 
   async addComment(issueId: string, userId: string, dto: AddCommentDto) {

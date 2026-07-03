@@ -2,12 +2,14 @@
 import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/models/issue_model.dart';
-import '../../../data/repositories/issue_repository.dart' show IssueRepository;
+import '../../../data/repositories/issue_repository.dart' show IssueDocumentInfo;
 import '../../../domain/enums/issue_status.dart';
 import '../../providers/issue_provider.dart';
 import '../../widgets/audio_player_tile.dart';
@@ -33,6 +35,7 @@ class _IssueDetailScreenState extends ConsumerState<IssueDetailScreen> {
   IssueModel? _issue;
   List<String> _photoUrls = [];
   List<String> _audioUrls = [];
+  List<IssueDocumentInfo> _documents = [];
   bool _loading = true;
 
   @override
@@ -47,11 +50,13 @@ class _IssueDetailScreenState extends ConsumerState<IssueDetailScreen> {
     if (issue != null) {
       final photoUrls = await repo.fetchPhotoUrls(widget.issueId);
       final audioUrls = await repo.fetchAudioUrls(widget.issueId);
+      final documents = await repo.fetchDocuments(widget.issueId);
       if (mounted) {
         setState(() {
           _issue = issue;
           _photoUrls = photoUrls;
           _audioUrls = audioUrls;
+          _documents = documents;
           _loading = false;
         });
       }
@@ -64,6 +69,19 @@ class _IssueDetailScreenState extends ConsumerState<IssueDetailScreen> {
     if (picked == null) return;
 
     await ref.read(issueRepositoryProvider).addPhoto(widget.issueId, picked.path);
+    await _loadIssue();
+  }
+
+  Future<void> _pickDocument() async {
+    final result = await FilePicker.platform.pickFiles();
+    final picked = result?.files.single;
+    if (picked?.path == null) return;
+
+    await ref.read(issueRepositoryProvider).addDocument(
+          widget.issueId,
+          picked!.path!,
+          fileName: picked.name,
+        );
     await _loadIssue();
   }
 
@@ -134,6 +152,7 @@ class _IssueDetailScreenState extends ConsumerState<IssueDetailScreen> {
         title: const Text('Issue Detail'),
         actions: [
           IconButton(icon: const Icon(Icons.add_a_photo), onPressed: _pickPhoto),
+          IconButton(icon: const Icon(Icons.attach_file), onPressed: _pickDocument),
         ],
       ),
       body: SingleChildScrollView(
@@ -239,6 +258,24 @@ class _IssueDetailScreenState extends ConsumerState<IssueDetailScreen> {
                     errorWidget: (_, __, ___) =>
                         Container(color: Colors.grey[200], child: const Icon(Icons.broken_image, color: Colors.grey)),
                   ),
+                ),
+              ),
+            ],
+            if (_documents.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              _sectionHeader(Icons.description, 'DOCUMENTS'),
+              const SizedBox(height: 8),
+              _sectionCard(
+                child: Column(
+                  children: List.generate(_documents.length, (i) {
+                    final doc = _documents[i];
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.insert_drive_file, color: AppColors.primary),
+                      title: Text(doc.fileName, overflow: TextOverflow.ellipsis),
+                      onTap: () => launchUrl(Uri.parse(doc.url), mode: LaunchMode.externalApplication),
+                    );
+                  }),
                 ),
               ),
             ],

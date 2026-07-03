@@ -53,6 +53,7 @@ model User {
   assignedIssues     Issue[]           @relation("AssignedIssues")
   issuePhotos        IssuePhoto[]
   issueAudios        IssueAudio[]
+  issueDocuments     IssueDocument[]
   issueComments      IssueComment[]
   fcmTokens          FcmToken[]
   notificationLogs   NotificationLog[]
@@ -163,6 +164,7 @@ model Issue {
 
   photos           IssuePhoto[]
   audios           IssueAudio[]
+  documents        IssueDocument[]
   comments         IssueComment[]
   notificationLogs NotificationLog[]
 
@@ -193,6 +195,20 @@ model IssueAudio {
   uploader User  @relation(fields: [uploadedBy], references: [id])
 
   @@map("issue_audios")
+}
+
+model IssueDocument {
+  id          String   @id @default(uuid()) @db.Uuid
+  issueId     String   @db.Uuid
+  storagePath String
+  fileName    String
+  uploadedBy  String   @db.Uuid
+  createdAt   DateTime @default(now())
+
+  issue    Issue @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  uploader User  @relation(fields: [uploadedBy], references: [id])
+
+  @@map("issue_documents")
 }
 
 model IssueComment {
